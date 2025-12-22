@@ -229,10 +229,10 @@ class _HomeScreenState extends State<HomeScreen> {
     final pages = <Widget>[
       _buildDashboard(context),
       const FoodTabContent(),
-      const WaterTabContent(),
+      const LiquidTabContent(),
     ];
 
-    final titles = ['Dashboard', 'Add Food', 'Water'];
+    final titles = ['Dashboard', 'Add Food', 'Liquid'];
 
     return Scaffold(
       appBar: AppBar(

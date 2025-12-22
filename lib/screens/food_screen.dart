@@ -32,9 +32,17 @@ class _FoodTabContentState extends State<FoodTabContent> {
   String selectedMealType = 'breakfast';
   String selectedCategory = 'none';
   DateTime selectedTime = DateTime.now();
-  
+
   final List<String> mealTypes = ['breakfast', 'lunch', 'dinner', 'snack'];
-  final List<String> categories = ['protein', 'carbs', 'fats', 'liquid', 'vegetables', 'fruits', 'none'];
+  final List<String> categories = [
+    'protein',
+    'carbs',
+    'fats',
+    'liquid',
+    'vegetables',
+    'fruits',
+    'none',
+  ];
 
   @override
   void dispose() {
@@ -83,8 +91,9 @@ class _FoodTabContentState extends State<FoodTabContent> {
       mealType: selectedMealType,
     );
 
-    ScaffoldMessenger.of(context)
-        .showSnackBar(const SnackBar(content: Text('Food entry added!')));
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Food entry added!')));
 
     // clear fields so user can add another quickly
     nameController.clear();
@@ -203,7 +212,9 @@ class _FoodTabContentState extends State<FoodTabContent> {
                     },
                     label: Text(category.capitalize()),
                     backgroundColor: Colors.grey[100],
-                    selectedColor: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                    selectedColor: Theme.of(
+                      context,
+                    ).colorScheme.primary.withOpacity(0.2),
                     labelStyle: TextStyle(
                       color: selectedCategory == category
                           ? Theme.of(context).colorScheme.primary
@@ -225,13 +236,9 @@ class _FoodTabContentState extends State<FoodTabContent> {
                 child: _buildMacroInput('Protein', 'g', proteinController),
               ),
               const SizedBox(width: 12),
-              Expanded(
-                child: _buildMacroInput('Carbs', 'g', carbsController),
-              ),
+              Expanded(child: _buildMacroInput('Carbs', 'g', carbsController)),
               const SizedBox(width: 12),
-              Expanded(
-                child: _buildMacroInput('Fats', 'g', fatsController),
-              ),
+              Expanded(child: _buildMacroInput('Fats', 'g', fatsController)),
             ],
           ),
 
@@ -282,13 +289,20 @@ class _FoodTabContentState extends State<FoodTabContent> {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8),
-        borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: 1.5),
+        borderSide: BorderSide(
+          color: Theme.of(context).colorScheme.primary,
+          width: 1.5,
+        ),
       ),
       contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
     );
   }
 
-  Widget _buildMacroInput(String label, String unit, TextEditingController controller) {
+  Widget _buildMacroInput(
+    String label,
+    String unit,
+    TextEditingController controller,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -318,9 +332,15 @@ class _FoodTabContentState extends State<FoodTabContent> {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(6),
-              borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: 1.5),
+              borderSide: BorderSide(
+                color: Theme.of(context).colorScheme.primary,
+                width: 1.5,
+              ),
             ),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 10,
+              vertical: 10,
+            ),
             suffixText: unit,
             suffixStyle: TextStyle(color: Colors.grey[600], fontSize: 12),
           ),
