@@ -179,7 +179,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                             labelText: 'Steps',
                             labelStyle: TextStyle(
-                              color: Theme.of(context).colorScheme.primary,
+                              color: Colors.black87,
+                              fontWeight: FontWeight.bold,
                             ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
@@ -204,7 +205,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                             labelText: 'Cardio',
                             labelStyle: TextStyle(
-                              color: Theme.of(context).colorScheme.secondary,
+                              color: Colors.black87,
+                              fontWeight: FontWeight.bold,
                             ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
