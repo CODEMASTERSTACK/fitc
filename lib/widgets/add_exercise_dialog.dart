@@ -6,7 +6,7 @@ class AddExerciseDialog extends StatefulWidget {
   final String selectedDay;
 
   const AddExerciseDialog({Key? key, required this.selectedDay})
-      : super(key: key);
+    : super(key: key);
 
   @override
   State<AddExerciseDialog> createState() => _AddExerciseDialogState();
@@ -60,12 +60,12 @@ class _AddExerciseDialogState extends State<AddExerciseDialog> {
     }
 
     context.read<ExerciseProvider>().addExercise(
-          name: name,
-          description: description,
-          imageUrl: imageUrl,
-          durationSeconds: duration,
-          dayOfWeek: _selectedDay!,
-        );
+      name: name,
+      description: description,
+      imageUrl: imageUrl,
+      durationSeconds: duration,
+      dayOfWeek: _selectedDay!,
+    );
 
     Navigator.of(context).pop();
   }

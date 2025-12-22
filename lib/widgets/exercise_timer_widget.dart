@@ -105,10 +105,7 @@ class _ExerciseTimerWidgetState extends State<ExerciseTimerWidget> {
           Center(
             child: Text(
               'Target: ${widget.exercise.formattedDuration}',
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.grey[600],
-              ),
+              style: TextStyle(fontSize: 12, color: Colors.grey[600]),
             ),
           ),
 

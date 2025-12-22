@@ -9,10 +9,7 @@ class ExerciseScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Exercise Plan'),
-        elevation: 0,
-      ),
+      appBar: AppBar(title: const Text('Exercise Plan'), elevation: 0),
       body: const ExerciseTabContent(),
     );
   }
@@ -36,7 +33,10 @@ class _ExerciseTabContentState extends State<ExerciseTabContent> {
             return SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8,
+                  vertical: 12,
+                ),
                 child: Row(
                   children: ExerciseProvider.daysOfWeek.map((day) {
                     final isSelected = exerciseProvider.selectedDay == day;
@@ -52,15 +52,11 @@ class _ExerciseTabContentState extends State<ExerciseTabContent> {
                             vertical: 10,
                           ),
                           decoration: BoxDecoration(
-                            color: isSelected
-                                ? Colors.blue
-                                : Colors.grey[100],
+                            color: isSelected ? Colors.blue : Colors.grey[100],
                             borderRadius: BorderRadius.circular(12),
                             border: isSelected
                                 ? null
-                                : Border.all(
-                                    color: Colors.grey[300]!,
-                                  ),
+                                : Border.all(color: Colors.grey[300]!),
                           ),
                           child: Text(
                             day.substring(0, 3),
@@ -87,7 +83,7 @@ class _ExerciseTabContentState extends State<ExerciseTabContent> {
           child: Consumer<ExerciseProvider>(
             builder: (context, exerciseProvider, _) {
               final exercises = exerciseProvider.exercisesForSelectedDay;
-              
+
               if (exercises.isEmpty) {
                 return Center(
                   child: Column(
@@ -101,10 +97,7 @@ class _ExerciseTabContentState extends State<ExerciseTabContent> {
                       const SizedBox(height: 12),
                       Text(
                         'No exercises for ${exerciseProvider.selectedDay}',
-                        style: TextStyle(
-                          color: Colors.grey[600],
-                          fontSize: 14,
-                        ),
+                        style: TextStyle(color: Colors.grey[600], fontSize: 14),
                       ),
                     ],
                   ),

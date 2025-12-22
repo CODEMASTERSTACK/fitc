@@ -43,10 +43,7 @@ class ExerciseCard extends StatelessWidget {
                       const SizedBox(height: 4),
                       Text(
                         exercise.description,
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: Colors.grey[600],
-                        ),
+                        style: TextStyle(fontSize: 13, color: Colors.grey[600]),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -55,10 +52,7 @@ class ExerciseCard extends StatelessWidget {
                 ),
                 PopupMenuButton(
                   itemBuilder: (context) => [
-                    PopupMenuItem(
-                      child: const Text('Delete'),
-                      onTap: onDelete,
-                    ),
+                    PopupMenuItem(child: const Text('Delete'), onTap: onDelete),
                   ],
                   child: Icon(Icons.more_vert, color: Colors.grey[600]),
                 ),
@@ -128,10 +122,7 @@ class ExerciseCard extends StatelessWidget {
 
             // Timer Section
             if (!exercise.isCompleted)
-              ExerciseTimerWidget(
-                exercise: exercise,
-                onComplete: onComplete,
-              )
+              ExerciseTimerWidget(exercise: exercise, onComplete: onComplete)
             else
               // Completed state
               Container(
@@ -145,7 +136,11 @@ class ExerciseCard extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        const Icon(Icons.check_circle, color: Colors.green, size: 20),
+                        const Icon(
+                          Icons.check_circle,
+                          color: Colors.green,
+                          size: 20,
+                        ),
                         const SizedBox(width: 8),
                         Text(
                           'Completed',
@@ -170,7 +165,10 @@ class ExerciseCard extends StatelessWidget {
                         ),
                         TextButton(
                           onPressed: onReset,
-                          child: const Text('Reset', style: TextStyle(fontSize: 12)),
+                          child: const Text(
+                            'Reset',
+                            style: TextStyle(fontSize: 12),
+                          ),
                         ),
                       ],
                     ),

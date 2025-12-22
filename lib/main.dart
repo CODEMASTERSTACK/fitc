@@ -11,7 +11,6 @@ void main() async {
 
   final storageService = StorageService();
   await storageService.init();
-  
 
   runApp(
     MultiProvider(
