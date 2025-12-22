@@ -10,6 +10,7 @@ void main() async {
 
   final storageService = StorageService();
   await storageService.init();
+  
 
   runApp(
     MultiProvider(
@@ -33,6 +34,7 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Fitness Tracker',
       theme: ThemeData(
         useMaterial3: true,
