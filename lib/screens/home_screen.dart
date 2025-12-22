@@ -21,16 +21,17 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-    final _stepsController = TextEditingController();
-    final _cardioController = TextEditingController();
-    bool _stepsCardioSaved = false;
+  final _stepsController = TextEditingController();
+  final _cardioController = TextEditingController();
+  bool _stepsCardioSaved = false;
 
-    @override
-    void dispose() {
-      _stepsController.dispose();
-      _cardioController.dispose();
-      super.dispose();
-    }
+  @override
+  void dispose() {
+    _stepsController.dispose();
+    _cardioController.dispose();
+    super.dispose();
+  }
+
   bool _selfCheckShown = false;
 
   @override
@@ -151,7 +152,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.directions_walk, color: Colors.white, size: 32),
+                      Icon(
+                        Icons.directions_walk,
+                        color: Colors.white,
+                        size: 32,
+                      ),
                       const SizedBox(width: 12),
                       Text(
                         'Steps & Cardio',
@@ -228,26 +233,39 @@ class _HomeScreenState extends State<HomeScreen> {
                         label: const Text('Save'),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.white,
-                          foregroundColor: Theme.of(context).colorScheme.primary,
-                          textStyle: const TextStyle(fontWeight: FontWeight.bold),
+                          foregroundColor: Theme.of(
+                            context,
+                          ).colorScheme.primary,
+                          textStyle: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
                           padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
                         ),
                         onPressed: () async {
-                          final steps = int.tryParse(_stepsController.text) ?? 0;
-                          final cardio = int.tryParse(_cardioController.text) ?? 0;
+                          final steps =
+                              int.tryParse(_stepsController.text) ?? 0;
+                          final cardio =
+                              int.tryParse(_cardioController.text) ?? 0;
                           final entry = StepsCardioEntry(
                             date: DateTime.now(),
                             steps: steps,
                             cardioMinutes: cardio,
                           );
-                          final storage = Provider.of<StorageService>(context, listen: false);
+                          final storage = Provider.of<StorageService>(
+                            context,
+                            listen: false,
+                          );
                           await storage.saveStepsCardioEntry(entry);
                           setState(() {
                             _stepsCardioSaved = true;
                           });
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Steps & Cardio saved for today!')),
+                            const SnackBar(
+                              content: Text('Steps & Cardio saved for today!'),
+                            ),
                           );
                         },
                       ),
@@ -255,7 +273,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   const SizedBox(height: 10),
                   Text(
                     'Track your daily steps and cardio time for a healthier you!',
-                    style: TextStyle(color: Colors.white.withOpacity(0.85), fontSize: 14),
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.85),
+                      fontSize: 14,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                 ],

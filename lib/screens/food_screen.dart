@@ -123,7 +123,16 @@ class _FoodTabContentState extends State<FoodTabContent> {
                 .map(
                   (type) => ButtonSegment(
                     value: type,
-                    label: Text(type.capitalize()),
+                    label: Container(
+                      constraints: const BoxConstraints(minWidth: 80),
+                      alignment: Alignment.center,
+                      child: Text(
+                        type.capitalize(),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(fontSize: 15),
+                      ),
+                    ),
                   ),
                 )
                 .toList(),
@@ -168,7 +177,7 @@ class _FoodTabContentState extends State<FoodTabContent> {
           const SizedBox(height: 8),
           TextField(
             controller: nameController,
-            decoration: _buildInputDecoration('e.g., Chicken Breast'),
+            decoration: _buildInputDecoration('e.g., Dal, Roti, Curry. etc'),
           ),
 
           const SizedBox(height: 16),
