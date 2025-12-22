@@ -25,7 +25,14 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildDashboard(BuildContext context) {
-    final dateStr = DateTime.now();
+    final now = DateTime.now();
+    String getGreeting() {
+      final hour = now.hour;
+      if (hour >= 5 && hour < 12) return 'Good morning';
+      if (hour >= 12 && hour < 17) return 'Good afternoon';
+      if (hour >= 17 && hour < 21) return 'Good evening';
+      return 'Good night';
+    }
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
       child: Column(
@@ -35,18 +42,17 @@ class _HomeScreenState extends State<HomeScreen> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Will update greeting logic in next step
               Text(
-                'Good morning',
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      color: Colors.grey[800],
+                getGreeting(),
+                style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                      color: Colors.grey[900],
                       fontWeight: FontWeight.bold,
-                      fontSize: 28,
+                      fontSize: 32,
                     ),
               ),
-              const SizedBox(height: 6),
+              const SizedBox(height: 8),
               Text(
-                '${dateStr.day}/${dateStr.month}/${dateStr.year}',
+                '${now.day}/${now.month}/${now.year}',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.w700,
                     ),
@@ -56,96 +62,101 @@ class _HomeScreenState extends State<HomeScreen> {
 
           const SizedBox(height: 22),
 
-          // Responsive summary cards
-          LayoutBuilder(
-            builder: (context, constraints) {
-              if (constraints.maxWidth < 400) {
-                // Stack vertically for small screens
-                return Column(
-                  children: [
-                    Consumer<FoodProvider>(
-                      builder: (context, foodProvider, _) => _SmallCard(
-                        title: 'Food',
-                        value: foodProvider.totalCalories.toStringAsFixed(0),
-                        subtitle: 'kcal today',
-                        icon: Icons.restaurant,
-                        color: Colors.deepPurple,
-                        onTap: () => _onItemTapped(1),
+          // Food Section
+          Consumer<FoodProvider>(
+            builder: (context, foodProvider, _) {
+              final totalQuantity = foodProvider.todaysFoods.fold<double>(0, (sum, f) => sum + (f.quantity ?? 0));
+              return Card(
+                margin: const EdgeInsets.only(bottom: 16),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.restaurant, color: Colors.deepPurple),
+                          const SizedBox(width: 8),
+                          Text('Food', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+                        ],
                       ),
-                    ),
-                    const SizedBox(height: 12),
-                    Consumer<WaterProvider>(
-                      builder: (context, waterProvider, _) => _SmallCard(
-                        title: 'Liquid',
-                        value: waterProvider.totalWaterToday.toStringAsFixed(0),
-                        subtitle: 'ml today',
-                        icon: Icons.water_drop,
-                        color: Colors.blue,
-                        onTap: () => _onItemTapped(2),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Consumer<ExerciseProvider>(
-                      builder: (context, exerciseProvider, _) => _SmallCard(
-                        title: 'Exercise',
-                        value: '${exerciseProvider.completedExercisesCount}/${exerciseProvider.totalExercisesCount}',
-                        subtitle: 'done today',
-                        icon: Icons.fitness_center,
-                        color: Colors.green,
-                        onTap: () => _onItemTapped(3),
-                      ),
-                    ),
-                  ],
-                );
-              } else {
-                // Row for larger screens
-                return Row(
-                  children: [
-                    Expanded(
-                      child: Consumer<FoodProvider>(
-                        builder: (context, foodProvider, _) => _SmallCard(
-                          title: 'Food',
-                          value: foodProvider.totalCalories.toStringAsFixed(0),
-                          subtitle: 'kcal today',
-                          icon: Icons.restaurant,
-                          color: Colors.deepPurple,
-                          onTap: () => _onItemTapped(1),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Consumer<WaterProvider>(
-                        builder: (context, waterProvider, _) => _SmallCard(
-                          title: 'Liquid',
-                          value: waterProvider.totalWaterToday.toStringAsFixed(0),
-                          subtitle: 'ml today',
-                          icon: Icons.water_drop,
-                          color: Colors.blue,
-                          onTap: () => _onItemTapped(2),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Consumer<ExerciseProvider>(
-                        builder: (context, exerciseProvider, _) => _SmallCard(
-                          title: 'Exercise',
-                          value: '${exerciseProvider.completedExercisesCount}/${exerciseProvider.totalExercisesCount}',
-                          subtitle: 'done today',
-                          icon: Icons.fitness_center,
-                          color: Colors.green,
-                          onTap: () => _onItemTapped(3),
-                        ),
-                      ),
-                    ),
-                  ],
-                );
-              }
+                      const SizedBox(height: 10),
+                      Text('Calories: ${foodProvider.totalCalories.toStringAsFixed(0)} kcal', style: Theme.of(context).textTheme.bodyLarge),
+                      Text('Total Quantity: ${totalQuantity.toStringAsFixed(0)} g/ml', style: Theme.of(context).textTheme.bodyLarge),
+                    ],
+                  ),
+                ),
+              );
             },
           ),
 
-          const SizedBox(height: 22),
+          // Liquid Section
+          Consumer<WaterProvider>(
+            builder: (context, waterProvider, _) {
+              final drinks = waterProvider.todaysWater;
+              final totalWater = drinks.where((w) => w.type == 'water').fold<double>(0, (sum, w) => sum + w.volume);
+              final coffeeCups = drinks.where((w) => w.type == 'coffee').length;
+              final teaCups = drinks.where((w) => w.type == 'tea').length;
+              return Card(
+                margin: const EdgeInsets.only(bottom: 16),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.water_drop, color: Colors.blue),
+                          const SizedBox(width: 8),
+                          Text('Liquid', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      Text('Total Water Intake: ${totalWater.toStringAsFixed(0)} ml', style: Theme.of(context).textTheme.bodyLarge),
+                      Text('Coffee: $coffeeCups cup(s)', style: Theme.of(context).textTheme.bodyLarge),
+                      Text('Tea: $teaCups cup(s)', style: Theme.of(context).textTheme.bodyLarge),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+
+          // Exercise Section
+          Consumer<ExerciseProvider>(
+            builder: (context, exerciseProvider, _) {
+              final done = exerciseProvider.completedExercisesCount;
+              final total = exerciseProvider.totalExercisesCount;
+              final left = (total - done).clamp(0, total);
+              final totalTime = exerciseProvider.exercisesForSelectedDay.fold<int>(0, (sum, e) => sum + (e.durationSeconds ?? 0));
+              return Card(
+                margin: const EdgeInsets.only(bottom: 16),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.fitness_center, color: Colors.green),
+                          const SizedBox(width: 8),
+                          Text('Exercise', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      Text('Done: $done', style: Theme.of(context).textTheme.bodyLarge),
+                      Text('Left: $left', style: Theme.of(context).textTheme.bodyLarge),
+                      Text('Total Time: ${Duration(seconds: totalTime).inMinutes} min', style: Theme.of(context).textTheme.bodyLarge),
+                      // Add more stats as needed
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
 
           // Water compact progress
           Consumer<WaterProvider>(
