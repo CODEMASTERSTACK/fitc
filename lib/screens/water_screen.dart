@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/water_provider.dart';
 import '../widgets/water_entry_card.dart';
+import '../widgets/animated_water_glass.dart';
 
 extension StringExtension on String {
   String capitalize() {
@@ -77,7 +78,7 @@ class _LiquidTabContentState extends State<LiquidTabContent> {
 
   void _addLiquid(BuildContext context, double amount) {
     final mlAmount = amount * (drinkToMl[selectedDrink] ?? 240.0);
-    context.read<WaterProvider>().addWaterEntry(mlAmount);
+    context.read<WaterProvider>().addLiquidEntry(mlAmount, selectedDrink);
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -155,6 +156,69 @@ class _LiquidTabContentState extends State<LiquidTabContent> {
 
           const SizedBox(height: 24),
 
+          // Water Goal Animation Glass
+          Consumer<WaterProvider>(
+            builder: (context, waterProvider, _) {
+              final progress =
+                  waterProvider.totalWaterToday / waterProvider.dailyGoal;
+
+              return Column(
+                children: [
+                  // Animated Glass
+                  SizedBox(
+                    height: 350,
+                    child: AnimatedWaterGlass(
+                      waterLevel: progress,
+                      waterColor: Colors.blue,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Water stats below glass
+                  Column(
+                    children: [
+                      Text(
+                        '${waterProvider.totalWaterToday.toStringAsFixed(0)} ml',
+                        style: const TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'of ${waterProvider.dailyGoal.toStringAsFixed(0)} ml daily goal',
+                        style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                      ),
+                      const SizedBox(height: 12),
+                      if (waterProvider.totalWaterToday >=
+                          waterProvider.dailyGoal)
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.green.withOpacity(0.15),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: const Text(
+                            '✓ Daily goal achieved!',
+                            style: TextStyle(
+                              color: Colors.green,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ],
+              );
+            },
+          ),
+
+          const SizedBox(height: 28),
+
           // Daily Goal Progress
           Consumer<WaterProvider>(
             builder: (context, waterProvider, _) {
@@ -177,7 +241,7 @@ class _LiquidTabContentState extends State<LiquidTabContent> {
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      '${waterProvider.totalWaterToday.toStringAsFixed(0)} ml',
+                      '${waterProvider.totalLiquidsToday.toStringAsFixed(0)} ml',
                       style: const TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
@@ -185,17 +249,14 @@ class _LiquidTabContentState extends State<LiquidTabContent> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'of ${waterProvider.dailyGoal.toStringAsFixed(0)} ml daily goal',
+                      'Total liquids today',
                       style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                     ),
                     const SizedBox(height: 14),
                     ClipRRect(
                       borderRadius: BorderRadius.circular(6),
                       child: LinearProgressIndicator(
-                        value:
-                            (waterProvider.totalWaterToday /
-                                    waterProvider.dailyGoal)
-                                .clamp(0.0, 1.0),
+                        value: 1.0,
                         minHeight: 8,
                         backgroundColor: Colors.grey[300],
                         valueColor: AlwaysStoppedAnimation<Color>(
@@ -203,27 +264,6 @@ class _LiquidTabContentState extends State<LiquidTabContent> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 12),
-                    if (waterProvider.totalWaterToday >=
-                        waterProvider.dailyGoal)
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.green.withOpacity(0.15),
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: const Text(
-                          '✓ Daily goal achieved!',
-                          style: TextStyle(
-                            color: Colors.green,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 13,
-                          ),
-                        ),
-                      ),
                   ],
                 ),
               );
@@ -332,6 +372,7 @@ class _LiquidTabContentState extends State<LiquidTabContent> {
                   return WaterEntryCard(
                     volume: water.volume,
                     formattedTime: water.formattedTime,
+                    drinkType: water.drinkType,
                     onDelete: () {
                       waterProvider.deleteWaterEntry(water.id);
                     },

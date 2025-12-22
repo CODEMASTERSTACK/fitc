@@ -18,9 +18,14 @@ class WaterProvider extends ChangeNotifier {
       .where((e) => _isSameDay(e.timestamp, _selectedDate))
       .toList();
 
-  double get totalWaterToday => todaysWater.fold(0, (sum, e) => sum + e.volume);
+  // Only water counts towards the daily goal
+  double get totalWaterToday => todaysWater
+      .where((e) => e.drinkType == 'water')
+      .fold(0, (sum, e) => sum + e.volume);
 
-  double get dailyGoalProgress => totalWaterToday / dailyGoal;
+  // All liquids for today
+  double get totalLiquidsToday =>
+      todaysWater.fold(0, (sum, e) => sum + e.volume);
 
   Future<void> init() async {
     _waterEntries = await storageService.getWaterEntries();
@@ -33,6 +38,22 @@ class WaterProvider extends ChangeNotifier {
       id: uuid.v4(),
       volume: volume,
       timestamp: DateTime.now(),
+      drinkType:
+          'water', // Default to water, will be overridden in water_screen
+    );
+
+    _waterEntries.add(entry);
+    await storageService.addWaterEntry(entry);
+    notifyListeners();
+  }
+
+  Future<void> addLiquidEntry(double volume, String drinkType) async {
+    const uuid = Uuid();
+    final entry = WaterEntry(
+      id: uuid.v4(),
+      volume: volume,
+      timestamp: DateTime.now(),
+      drinkType: drinkType,
     );
 
     _waterEntries.add(entry);
