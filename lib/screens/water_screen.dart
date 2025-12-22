@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:math';
 import 'package:provider/provider.dart';
 import '../providers/water_provider.dart';
 import '../widgets/water_entry_card.dart';
@@ -89,6 +90,9 @@ class _LiquidTabContentState extends State<LiquidTabContent> {
       ),
     );
   }
+
+  // How many items to display initially; 'Show more' will increase by this chunk
+  int _displayLimit = 10;
 
   @override
   Widget build(BuildContext context) {
@@ -310,21 +314,54 @@ class _LiquidTabContentState extends State<LiquidTabContent> {
                 );
               }
 
-              return ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: waterProvider.todaysWater.length,
-                itemBuilder: (context, index) {
-                  final water = waterProvider.todaysWater[index];
-                  return WaterEntryCard(
-                    volume: water.volume,
-                    formattedTime: water.formattedTime,
-                    drinkType: water.drinkType,
-                    onDelete: () {
-                      waterProvider.deleteWaterEntry(water.id);
+              // Show most recent entries first
+              final todays = waterProvider.todaysWater.reversed.toList();
+              final total = todays.length;
+              final showCount = min(_displayLimit, total);
+
+              return Column(
+                children: [
+                  ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: showCount,
+                    itemBuilder: (context, index) {
+                      final water = todays[index];
+                      return WaterEntryCard(
+                        volume: water.volume,
+                        formattedTime: water.formattedTime,
+                        drinkType: water.drinkType,
+                        onDelete: () {
+                          waterProvider.deleteWaterEntry(water.id);
+                        },
+                      );
                     },
-                  );
-                },
+                  ),
+                  if (total > showCount)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      child: TextButton(
+                        onPressed: () {
+                          setState(() {
+                            _displayLimit += 10;
+                          });
+                        },
+                        child: Text('Show more (${total - showCount} more)'),
+                      ),
+                    ),
+                  if (showCount > 10)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      child: TextButton(
+                        onPressed: () {
+                          setState(() {
+                            _displayLimit = 10;
+                          });
+                        },
+                        child: const Text('Show less'),
+                      ),
+                    ),
+                ],
               );
             },
           ),

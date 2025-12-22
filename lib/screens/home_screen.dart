@@ -293,7 +293,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               _NavItem(
                 icon: Icons.water_drop,
-                label: 'Water',
+                label: 'Liquid',
                 selected: _selectedIndex == 2,
                 onTap: () => _onItemTapped(2),
               ),

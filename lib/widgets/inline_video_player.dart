@@ -18,20 +18,23 @@ class _InlineVideoPlayerState extends State<InlineVideoPlayer> {
   @override
   void initState() {
     super.initState();
-    _videoController = VideoPlayerController.network(widget.url)
-      ..initialize()
-          .then((_) {
-            _chewieController = ChewieController(
-              videoPlayerController: _videoController,
-              autoPlay: false,
-              looping: false,
-              showControls: true,
-            );
-            setState(() => _initialized = true);
-          })
-          .catchError((_) {
-            // initialization failed
-          });
+    // Use networkUrl (non-deprecated) and enable scrubbing in Chewie so users can seek by tapping the progress bar.
+    _videoController = VideoPlayerController.networkUrl(Uri.parse(widget.url));
+    _videoController
+        .initialize()
+        .then((_) {
+          _chewieController = ChewieController(
+            videoPlayerController: _videoController,
+            autoPlay: false,
+            looping: false,
+            showControls: true,
+            allowFullScreen: true,
+          );
+          setState(() => _initialized = true);
+        })
+        .catchError((_) {
+          // initialization failed
+        });
   }
 
   @override
@@ -50,6 +53,12 @@ class _InlineVideoPlayerState extends State<InlineVideoPlayer> {
       );
     }
 
-    return Chewie(controller: _chewieController!);
+    // Constrain the player to the video's aspect ratio so the controls (including progress bar)
+    // remain inside the frame and don't overflow.
+    final aspect = _videoController.value.aspectRatio;
+    return AspectRatio(
+      aspectRatio: aspect > 0 ? aspect : 16 / 9,
+      child: Chewie(controller: _chewieController!),
+    );
   }
 }
