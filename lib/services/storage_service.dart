@@ -3,11 +3,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/food_entry.dart';
 import '../models/water_entry.dart';
 import '../models/daily_summary.dart';
+import '../models/exercise.dart';
 
 class StorageService {
   static const String foodEntriesKey = 'food_entries';
   static const String waterEntriesKey = 'water_entries';
   static const String dailySummaryKey = 'daily_summary';
+  static const String exercisesKey = 'exercises';
 
   late SharedPreferences _prefs;
 
@@ -103,5 +105,38 @@ class StorageService {
   // Clear all data (for testing)
   Future<void> clearAllData() async {
     await _prefs.clear();
+  }
+
+  // Exercise Methods
+  Future<void> addExercise(Exercise exercise) async {
+    final exercises = await getExercises();
+    exercises.add(exercise);
+    await _saveExercises(exercises);
+  }
+
+  Future<List<Exercise>> getExercises() async {
+    final jsonString = _prefs.getString(exercisesKey) ?? '[]';
+    final jsonList = jsonDecode(jsonString) as List;
+    return jsonList.map((item) => Exercise.fromJson(item)).toList();
+  }
+
+  Future<void> updateExercise(Exercise exercise) async {
+    final exercises = await getExercises();
+    final index = exercises.indexWhere((e) => e.id == exercise.id);
+    if (index != -1) {
+      exercises[index] = exercise;
+      await _saveExercises(exercises);
+    }
+  }
+
+  Future<void> deleteExercise(String id) async {
+    final exercises = await getExercises();
+    exercises.removeWhere((e) => e.id == id);
+    await _saveExercises(exercises);
+  }
+
+  Future<void> _saveExercises(List<Exercise> exercises) async {
+    final jsonList = exercises.map((e) => e.toJson()).toList();
+    await _prefs.setString(exercisesKey, jsonEncode(jsonList));
   }
 }

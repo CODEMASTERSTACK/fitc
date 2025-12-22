@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'services/storage_service.dart';
 import 'providers/food_provider.dart';
 import 'providers/water_provider.dart';
+import 'providers/exercise_provider.dart';
 import 'screens/home_screen.dart';
 
 void main() async {
@@ -21,6 +22,9 @@ void main() async {
         ),
         ChangeNotifierProvider(
           create: (_) => WaterProvider(storageService)..init(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => ExerciseProvider(storageService)..init(),
         ),
       ],
       child: const MainApp(),

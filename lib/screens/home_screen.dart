@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/food_provider.dart';
 import '../providers/water_provider.dart';
+import '../providers/exercise_provider.dart';
 import '../widgets/food_entry_card.dart';
+import '../widgets/add_exercise_dialog.dart';
 import 'food_screen.dart';
 import 'water_screen.dart';
+import 'exercise_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -230,9 +233,10 @@ class _HomeScreenState extends State<HomeScreen> {
       _buildDashboard(context),
       const FoodTabContent(),
       const LiquidTabContent(),
+      const ExerciseTabContent(),
     ];
 
-    final titles = ['Dashboard', 'Add Food', 'Liquid'];
+    final titles = ['Dashboard', 'Add Food', 'Liquid', 'Exercise'];
 
     return Scaffold(
       appBar: AppBar(
@@ -241,6 +245,21 @@ class _HomeScreenState extends State<HomeScreen> {
         centerTitle: true,
       ),
       body: IndexedStack(index: _selectedIndex, children: pages),
+      floatingActionButton: _selectedIndex == 3
+          ? FloatingActionButton(
+              onPressed: () {
+                final exerciseProvider = context.read<ExerciseProvider>();
+                showDialog(
+                  context: context,
+                  builder: (context) => AddExerciseDialog(
+                    selectedDay: exerciseProvider.selectedDay,
+                  ),
+                );
+              },
+              tooltip: 'Add Exercise',
+              child: const Icon(Icons.add),
+            )
+          : null,
       // Floating minimal bottom nav
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(12),
@@ -277,6 +296,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 label: 'Water',
                 selected: _selectedIndex == 2,
                 onTap: () => _onItemTapped(2),
+              ),
+              _NavItem(
+                icon: Icons.fitness_center,
+                label: 'Exercise',
+                selected: _selectedIndex == 3,
+                onTap: () => _onItemTapped(3),
               ),
             ],
           ),
