@@ -181,32 +181,96 @@ class WaterGlassPainter extends CustomPainter {
 
     // Draw water with wave effect at top
     if (waterLevel > 0) {
-      // Water body
+      // Water body with rounded corners matching glass
       final waterPath = Path();
-      waterPath.moveTo(glassMargin + glassThickness / 2, waterTop);
+      final innerRadius = borderRadius - glassThickness;
 
-      // Add wave effect if water is moving
-      if (isOverflowing) {
-        final waveAmount = 3.0 * sin(overflowAnimation * 2 * pi);
-        waterPath.quadraticBezierTo(
-          width / 2,
-          waterTop + waveAmount,
-          width - glassMargin - glassThickness / 2,
-          waterTop,
+      // Start from left side with curve
+      waterPath.moveTo(
+        glassMargin + glassThickness / 2,
+        waterTop + innerRadius,
+      );
+
+      // Top-left arc (only if water doesn't fill to top)
+      if (waterTop > glassMargin + glassThickness / 2) {
+        waterPath.arcToPoint(
+          Offset(glassMargin + glassThickness / 2 + innerRadius, waterTop),
+          radius: Radius.circular(innerRadius),
+          clockwise: true,
         );
-      } else {
-        waterPath.lineTo(width - glassMargin - glassThickness / 2, waterTop);
       }
 
-      // Close the water shape
+      // Top edge with wave effect if overflowing
+      if (isOverflowing) {
+        // Create organic wave shape for overflow effect
+        const waveSegments = 30;
+        for (int i = 0; i <= waveSegments; i++) {
+          final progress = i / waveSegments;
+          final x =
+              (glassMargin + glassThickness / 2 + innerRadius) +
+              progress *
+                  (width - glassMargin * 2 - glassThickness - innerRadius * 2);
+
+          // Multiple sine waves for natural splash effect
+          final wave1 = sin(progress * pi + overflowAnimation * 2 * pi) * 2.5;
+          final wave2 =
+              sin(progress * pi * 2 + overflowAnimation * 3 * pi) * 1.5;
+          final y = waterTop + wave1 + wave2;
+
+          if (i == 0) {
+            waterPath.lineTo(x, y);
+          } else {
+            waterPath.lineTo(x, y);
+          }
+        }
+      } else {
+        waterPath.lineTo(
+          width - glassMargin - glassThickness / 2 - innerRadius,
+          waterTop,
+        );
+        // Top-right arc
+        waterPath.arcToPoint(
+          Offset(
+            width - glassMargin - glassThickness / 2,
+            waterTop + innerRadius,
+          ),
+          radius: Radius.circular(innerRadius),
+          clockwise: true,
+        );
+      }
+
+      // Right side
       waterPath.lineTo(
         width - glassMargin - glassThickness / 2,
-        height - glassMargin - glassThickness / 2,
+        height - glassMargin - glassThickness / 2 - innerRadius,
       );
+
+      // Bottom-right arc
+      waterPath.arcToPoint(
+        Offset(
+          width - glassMargin - glassThickness / 2 - innerRadius,
+          height - glassMargin - glassThickness / 2,
+        ),
+        radius: Radius.circular(innerRadius),
+        clockwise: true,
+      );
+
+      // Bottom edge
       waterPath.lineTo(
-        glassMargin + glassThickness / 2,
+        glassMargin + glassThickness / 2 + innerRadius,
         height - glassMargin - glassThickness / 2,
       );
+
+      // Bottom-left arc
+      waterPath.arcToPoint(
+        Offset(
+          glassMargin + glassThickness / 2,
+          height - glassMargin - glassThickness / 2 - innerRadius,
+        ),
+        radius: Radius.circular(innerRadius),
+        clockwise: true,
+      );
+
       waterPath.close();
 
       // Draw water with gradient
@@ -287,36 +351,67 @@ class PuddlePainter extends CustomPainter {
     final width = size.width;
     final height = size.height;
 
-    // Create puddle shape that spreads and fills from bottom
-    final puddleHeight =
-        height * (fillAnimation * overflowAmount * 2).clamp(0.0, 1.0);
-    final puddleWidth = width * (fillAnimation + 0.3);
+    // Draw "WATER OVERFLOW" label
+    final textPainter = TextPainter(
+      text: TextSpan(
+        text: '⚠ WATER OVERFLOW',
+        style: TextStyle(
+          color: waterColor,
+          fontSize: 12,
+          fontWeight: FontWeight.w700,
+          letterSpacing: 0.5,
+        ),
+      ),
+      textDirection: TextDirection.ltr,
+    );
+    textPainter.layout();
+    textPainter.paint(
+      canvas,
+      Offset(width / 2 - textPainter.width / 2, height * 0.15),
+    );
 
-    // Center puddle horizontally
-    final puddleLeft = (width - puddleWidth) / 2;
+    // Create organic splash shapes coming from top center
+    final centerX = width / 2;
+    final splashTopY = height * 0.12;
 
-    // Create puddle path with wave effect
+    // Main puddle at bottom
+    final puddleHeight = height * 0.25 * fillAnimation.clamp(0.0, 1.0);
+    final baseWidth = width * (0.6 + fillAnimation * 0.3);
+    final puddleLeft = (width - baseWidth) / 2;
+
+    // Draw main puddle with irregular organic shape
     final puddlePath = Path();
-    puddlePath.moveTo(puddleLeft, height - puddleHeight);
 
-    // Add wavy top edge
-    const segments = 20;
-    for (int i = 0; i <= segments; i++) {
-      final x = puddleLeft + (puddleWidth / segments) * i;
-      final waveY = sin((i / segments) * pi + fillAnimation * 2 * pi) * 4;
-      puddlePath.lineTo(x, height - puddleHeight + waveY);
+    // Create puddle with wavy edges
+    const puddleSegments = 40;
+    for (int i = 0; i <= puddleSegments; i++) {
+      final progress = i / puddleSegments;
+      final x = puddleLeft + progress * baseWidth;
+
+      // Multiple layered sine waves for organic look
+      final wave1 = sin(progress * pi + fillAnimation * 2.5 * pi) * 3;
+      final wave2 = sin(progress * pi * 2 + fillAnimation * 1.5 * pi) * 2;
+      final wave3 = sin(progress * pi * 3 + fillAnimation * 3 * pi) * 1.5;
+
+      final y = height - puddleHeight + wave1 + wave2 + wave3;
+
+      if (i == 0) {
+        puddlePath.moveTo(x, y);
+      } else {
+        puddlePath.lineTo(x, y);
+      }
     }
 
-    // Close the puddle
-    puddlePath.lineTo(puddleLeft + puddleWidth, height);
+    // Close puddle to bottom
+    puddlePath.lineTo(puddleLeft + baseWidth, height);
     puddlePath.lineTo(puddleLeft, height);
     puddlePath.close();
 
-    // Draw puddle with gradient
-    final gradient = LinearGradient(
-      begin: Alignment.topCenter,
-      end: Alignment.bottomCenter,
-      colors: [waterColor.withOpacity(0.4), waterColor.withOpacity(0.6)],
+    // Draw puddle with radial gradient for depth
+    final gradient = RadialGradient(
+      center: Alignment(0, 0.6),
+      radius: 1.0,
+      colors: [waterColor.withOpacity(0.5), waterColor.withOpacity(0.25)],
     );
 
     canvas.drawPath(
@@ -326,19 +421,53 @@ class PuddlePainter extends CustomPainter {
           Rect.fromLTWH(
             puddleLeft,
             height - puddleHeight,
-            puddleWidth,
+            baseWidth,
             puddleHeight,
           ),
         ),
     );
 
-    // Add shine to puddle
+    // Draw water drops/splashes
+    const dropCount = 5;
+    for (int i = 0; i < dropCount; i++) {
+      final angle = (i / dropCount) * pi * 2 + fillAnimation * 2 * pi;
+      final distance = 30 + sin(fillAnimation * 3 * pi) * 10;
+
+      final dropX = centerX + cos(angle) * distance;
+      final dropY =
+          splashTopY +
+          sin(angle) * distance * 0.7 +
+          sin(fillAnimation * 2 * pi) * 15;
+
+      final dropSize = 2 + sin(fillAnimation * 2 * pi + i) * 1.5;
+
+      canvas.drawCircle(
+        Offset(dropX, dropY),
+        dropSize,
+        Paint()
+          ..color = waterColor.withOpacity(0.6)
+          ..maskFilter = MaskFilter.blur(BlurStyle.normal, 1),
+      );
+    }
+
+    // Add shine effect on puddle
+    final shineGradient = LinearGradient(
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+      colors: [Colors.white.withOpacity(0.2), Colors.white.withOpacity(0.05)],
+    );
+
     canvas.drawPath(
       puddlePath,
       Paint()
-        ..color = Colors.white.withOpacity(0.1)
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 1.0,
+        ..shader = shineGradient.createShader(
+          Rect.fromLTWH(
+            puddleLeft,
+            height - puddleHeight,
+            baseWidth,
+            puddleHeight,
+          ),
+        ),
     );
   }
 

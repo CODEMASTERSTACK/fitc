@@ -219,59 +219,6 @@ class _LiquidTabContentState extends State<LiquidTabContent> {
 
           const SizedBox(height: 28),
 
-          // Daily Goal Progress
-          Consumer<WaterProvider>(
-            builder: (context, waterProvider, _) {
-              return Container(
-                margin: const EdgeInsets.symmetric(horizontal: 16),
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: _getDrinkColor(selectedDrink).withOpacity(0.08),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: _getDrinkColor(selectedDrink).withOpacity(0.3),
-                  ),
-                ),
-                child: Column(
-                  children: [
-                    Icon(
-                      Icons.local_drink,
-                      size: 40,
-                      color: _getDrinkColor(selectedDrink),
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      '${waterProvider.totalLiquidsToday.toStringAsFixed(0)} ml',
-                      style: const TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Total liquids today',
-                      style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-                    ),
-                    const SizedBox(height: 14),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(6),
-                      child: LinearProgressIndicator(
-                        value: 1.0,
-                        minHeight: 8,
-                        backgroundColor: Colors.grey[300],
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                          _getDrinkColor(selectedDrink),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
-
-          const SizedBox(height: 28),
-
           // Quick Add Buttons
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
