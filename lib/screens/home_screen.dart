@@ -80,6 +80,91 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+                    // Steps & Cardio Section
+                    Container(
+                      margin: const EdgeInsets.only(bottom: 18),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Theme.of(context).colorScheme.primary.withOpacity(0.85),
+                            Theme.of(context).colorScheme.secondary.withOpacity(0.7),
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(22),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.08),
+                            blurRadius: 16,
+                            offset: const Offset(0, 6),
+                          ),
+                        ],
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 22),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.directions_walk, color: Colors.white, size: 32),
+                                const SizedBox(width: 12),
+                                Text(
+                                  'Steps & Cardio',
+                                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 24,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 18),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: TextFormField(
+                                    decoration: InputDecoration(
+                                      filled: true,
+                                      fillColor: Colors.white,
+                                      prefixIcon: Icon(Icons.directions_walk, color: Theme.of(context).colorScheme.primary),
+                                      labelText: 'Steps',
+                                      labelStyle: TextStyle(color: Theme.of(context).colorScheme.primary),
+                                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                                    ),
+                                    keyboardType: TextInputType.number,
+                                    style: TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: TextFormField(
+                                    decoration: InputDecoration(
+                                      filled: true,
+                                      fillColor: Colors.white,
+                                      prefixIcon: Icon(Icons.timer, color: Theme.of(context).colorScheme.secondary),
+                                      labelText: 'Cardio (min)',
+                                      labelStyle: TextStyle(color: Theme.of(context).colorScheme.secondary),
+                                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                                    ),
+                                    keyboardType: TextInputType.number,
+                                    style: TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 10),
+                            Text(
+                              'Track your daily steps and cardio time for a healthier you!',
+                              style: TextStyle(color: Colors.white.withOpacity(0.85), fontSize: 14),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
           // Dynamic greeting and date (profile icon removed)
           Padding(
             padding: const EdgeInsets.only(top: 8, bottom: 18),
