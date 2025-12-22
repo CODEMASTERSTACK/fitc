@@ -80,7 +80,34 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-                    // Steps & Cardio Section
+                
+          Padding(
+            padding: const EdgeInsets.only(top: 8, bottom: 18),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  getGreeting(),
+                  style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                    color: Theme.of(context).colorScheme.primary,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 34,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  '${now.day}/${now.month}/${now.year}',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withOpacity(0.7),
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+             // Steps & Cardio Section
                     Container(
                       margin: const EdgeInsets.only(bottom: 18),
                       decoration: BoxDecoration(
@@ -165,33 +192,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                     ),
-          // Dynamic greeting and date (profile icon removed)
-          Padding(
-            padding: const EdgeInsets.only(top: 8, bottom: 18),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  getGreeting(),
-                  style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.primary,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 34,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  '${now.day}/${now.month}/${now.year}',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.onSurface.withOpacity(0.7),
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
-            ),
-          ),
           // Food Section
           Consumer<FoodProvider>(
             builder: (context, foodProvider, _) {
