@@ -195,6 +195,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       const SizedBox(height: 14),
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
                             totalWater.toStringAsFixed(0),
@@ -211,6 +212,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       const SizedBox(height: 8),
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           for (var i = 0; i < drinkTypesToShow.length; i++) ...[
                             Text(
