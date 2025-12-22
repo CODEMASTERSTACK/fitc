@@ -40,174 +40,201 @@ class _HomeScreenState extends State<HomeScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Dynamic greeting and date (profile icon removed)
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 8, bottom: 18),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      getGreeting(),
-                      style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                            color: Theme.of(context).colorScheme.primary,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 34,
-                          ),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      '${now.day}/${now.month}/${now.year}',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-                            fontWeight: FontWeight.w500,
-                          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 8, bottom: 18),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  getGreeting(),
+                  style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                    color: Theme.of(context).colorScheme.primary,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 34,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  '${now.day}/${now.month}/${now.year}',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withOpacity(0.7),
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // Food Section
+          Consumer<FoodProvider>(
+            builder: (context, foodProvider, _) {
+              final totalQuantity = foodProvider.todaysFoods.fold<double>(
+                0,
+                (sum, f) => sum + (f.quantity ?? 0),
+              );
+              return Container(
+                margin: const EdgeInsets.only(bottom: 18),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surface,
+                  borderRadius: BorderRadius.circular(18),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.03),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
                     ),
                   ],
                 ),
-              ),
-          // Food Section
-          Consumer<FoodProvider>(
-            // Food Section
-            Consumer<FoodProvider>(
-              builder: (context, foodProvider, _) {
-                final totalQuantity = foodProvider.todaysFoods.fold<double>(0, (sum, f) => sum + (f.quantity ?? 0));
-                return Container(
-                  margin: const EdgeInsets.only(bottom: 18),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surface,
-                    borderRadius: BorderRadius.circular(18),
-                    boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 12, offset: const Offset(0, 4))],
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 18,
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Icon(Icons.restaurant, color: Colors.deepPurple, size: 28),
-                            const SizedBox(width: 10),
-                            Text('Food', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
-                          ],
-                        ),
-                        const SizedBox(height: 14),
-                        Row(
-                          children: [
-                            Text(foodProvider.totalCalories.toStringAsFixed(0), style: Theme.of(context).textTheme.displaySmall?.copyWith(fontWeight: FontWeight.bold)),
-                            const SizedBox(width: 8),
-                            Text('kcal', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey[600])),
-                            const SizedBox(width: 24),
-                            Text(totalQuantity.toStringAsFixed(0), style: Theme.of(context).textTheme.displaySmall?.copyWith(fontWeight: FontWeight.bold)),
-                            const SizedBox(width: 8),
-                            Text('g/ml', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey[600])),
-                          ],
-                        ),
-                      ],
-                    ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.restaurant,
+                            color: Colors.deepPurple,
+                            size: 28,
+                          ),
+                          const SizedBox(width: 10),
+                          Text(
+                            'Food',
+                            style: Theme.of(context).textTheme.titleLarge
+                                ?.copyWith(fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 14),
+                      Row(
+                        children: [
+                          Text(
+                            foodProvider.totalCalories.toStringAsFixed(0),
+                            style: Theme.of(context).textTheme.displaySmall
+                                ?.copyWith(fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'kcal',
+                            style: Theme.of(context).textTheme.bodyMedium
+                                ?.copyWith(color: Colors.grey[600]),
+                          ),
+                          const SizedBox(width: 24),
+                          Text(
+                            totalQuantity.toStringAsFixed(0),
+                            style: Theme.of(context).textTheme.displaySmall
+                                ?.copyWith(fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'g/ml',
+                            style: Theme.of(context).textTheme.bodyMedium
+                                ?.copyWith(color: Colors.grey[600]),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
-                );
-              },
-            ),
+                ),
+              );
+            },
+          ),
 
-            // Liquid Section
-            Consumer<WaterProvider>(
-              builder: (context, waterProvider, _) {
-                final drinks = waterProvider.todaysWater;
-                final totalWater = drinks.where((w) => w.drinkType == 'water').fold<double>(0, (sum, w) => sum + w.volume);
-                final coffeeCups = drinks.where((w) => w.drinkType == 'coffee').length;
-                final teaCups = drinks.where((w) => w.drinkType == 'tea').length;
-                return Container(
-                  margin: const EdgeInsets.only(bottom: 18),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surface,
-                    borderRadius: BorderRadius.circular(18),
-                    boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 12, offset: const Offset(0, 4))],
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Icon(Icons.water_drop, color: Colors.blue, size: 28),
-                            const SizedBox(width: 10),
-                            Text('Liquid', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
-                          ],
-                        ),
-                        const SizedBox(height: 14),
-                        Row(
-                          children: [
-                            Text(totalWater.toStringAsFixed(0), style: Theme.of(context).textTheme.displaySmall?.copyWith(fontWeight: FontWeight.bold)),
-                            const SizedBox(width: 8),
-                            Text('ml water', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey[600])),
-                            const SizedBox(width: 24),
-                            Text('$coffeeCups', style: Theme.of(context).textTheme.displaySmall?.copyWith(fontWeight: FontWeight.bold)),
-                            const SizedBox(width: 8),
-                            Text('coffee', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey[600])),
-                            const SizedBox(width: 16),
-                            Text('$teaCups', style: Theme.of(context).textTheme.displaySmall?.copyWith(fontWeight: FontWeight.bold)),
-                            const SizedBox(width: 8),
-                            Text('tea', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey[600])),
-                          ],
-                        ),
-                      ],
+          // Liquid Section
+          Consumer<WaterProvider>(
+            builder: (context, waterProvider, _) {
+              final drinks = waterProvider.todaysWater;
+              final totalWater = drinks
+                  .where((w) => w.drinkType == 'water')
+                  .fold<double>(0, (sum, w) => sum + w.volume);
+              final coffeeCups = drinks
+                  .where((w) => w.drinkType == 'coffee')
+                  .length;
+              final teaCups = drinks.where((w) => w.drinkType == 'tea').length;
+              return Container(
+                margin: const EdgeInsets.only(bottom: 18),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surface,
+                  borderRadius: BorderRadius.circular(18),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.03),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
                     ),
+                  ],
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 18,
                   ),
-                );
-              },
-            ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.water_drop, color: Colors.blue, size: 28),
+                          const SizedBox(width: 10),
+                          Text(
+                            'Liquid',
+                            style: Theme.of(context).textTheme.titleLarge
+                                ?.copyWith(fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 14),
+                      Row(
+                        children: [
+                          Text(
+                            totalWater.toStringAsFixed(0),
+                            style: Theme.of(context).textTheme.displaySmall
+                                ?.copyWith(fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'ml water',
+                            style: Theme.of(context).textTheme.bodyMedium
+                                ?.copyWith(color: Colors.grey[600]),
+                          ),
+                          const SizedBox(width: 24),
+                          Text(
+                            '$coffeeCups',
+                            style: Theme.of(context).textTheme.displaySmall
+                                ?.copyWith(fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'coffee',
+                            style: Theme.of(context).textTheme.bodyMedium
+                                ?.copyWith(color: Colors.grey[600]),
+                          ),
+                          const SizedBox(width: 16),
+                          Text(
+                            '$teaCups',
+                            style: Theme.of(context).textTheme.displaySmall
+                                ?.copyWith(fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'tea',
+                            style: Theme.of(context).textTheme.bodyMedium
+                                ?.copyWith(color: Colors.grey[600]),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
 
-            // Exercise Section
-            Consumer<ExerciseProvider>(
-              builder: (context, exerciseProvider, _) {
-                final done = exerciseProvider.completedExercisesCount;
-                final total = exerciseProvider.totalExercisesCount;
-                final left = (total - done).clamp(0, total);
-                final totalTime = exerciseProvider.exercisesForSelectedDay.fold<int>(0, (sum, e) => sum + (e.durationSeconds ?? 0));
-                return Container(
-                  margin: const EdgeInsets.only(bottom: 18),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surface,
-                    borderRadius: BorderRadius.circular(18),
-                    boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 12, offset: const Offset(0, 4))],
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Icon(Icons.fitness_center, color: Colors.green, size: 28),
-                            const SizedBox(width: 10),
-                            Text('Exercise', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
-                          ],
-                        ),
-                        const SizedBox(height: 14),
-                        Row(
-                          children: [
-                            Text('$done', style: Theme.of(context).textTheme.displaySmall?.copyWith(fontWeight: FontWeight.bold)),
-                            const SizedBox(width: 8),
-                            Text('done', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey[600])),
-                            const SizedBox(width: 24),
-                            Text('$left', style: Theme.of(context).textTheme.displaySmall?.copyWith(fontWeight: FontWeight.bold)),
-                            const SizedBox(width: 8),
-                            Text('left', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey[600])),
-                            const SizedBox(width: 24),
-                            Text('${Duration(seconds: totalTime).inMinutes}', style: Theme.of(context).textTheme.displaySmall?.copyWith(fontWeight: FontWeight.bold)),
-                            const SizedBox(width: 8),
-                            Text('min', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey[600])),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
+          // Exercise Section
           Consumer<ExerciseProvider>(
             builder: (context, exerciseProvider, _) {
               final done = exerciseProvider.completedExercisesCount;
@@ -215,20 +242,35 @@ class _HomeScreenState extends State<HomeScreen> {
               final left = (total - done).clamp(0, total);
               final totalTime = exerciseProvider.exercisesForSelectedDay
                   .fold<int>(0, (sum, e) => sum + (e.durationSeconds ?? 0));
-              return Card(
-                margin: const EdgeInsets.only(bottom: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
+              return Container(
+                margin: const EdgeInsets.only(bottom: 18),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surface,
+                  borderRadius: BorderRadius.circular(18),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.03),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 18,
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                         children: [
-                          Icon(Icons.fitness_center, color: Colors.green),
-                          const SizedBox(width: 8),
+                          Icon(
+                            Icons.fitness_center,
+                            color: Colors.green,
+                            size: 28,
+                          ),
+                          const SizedBox(width: 10),
                           Text(
                             'Exercise',
                             style: Theme.of(context).textTheme.titleLarge
@@ -236,26 +278,53 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 10),
-                      Text(
-                        'Done: $done',
-                        style: Theme.of(context).textTheme.bodyLarge,
+                      const SizedBox(height: 14),
+                      Row(
+                        children: [
+                          Text(
+                            '$done',
+                            style: Theme.of(context).textTheme.displaySmall
+                                ?.copyWith(fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'done',
+                            style: Theme.of(context).textTheme.bodyMedium
+                                ?.copyWith(color: Colors.grey[600]),
+                          ),
+                          const SizedBox(width: 24),
+                          Text(
+                            '$left',
+                            style: Theme.of(context).textTheme.displaySmall
+                                ?.copyWith(fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'left',
+                            style: Theme.of(context).textTheme.bodyMedium
+                                ?.copyWith(color: Colors.grey[600]),
+                          ),
+                          const SizedBox(width: 24),
+                          Text(
+                            '${Duration(seconds: totalTime).inMinutes}',
+                            style: Theme.of(context).textTheme.displaySmall
+                                ?.copyWith(fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'min',
+                            style: Theme.of(context).textTheme.bodyMedium
+                                ?.copyWith(color: Colors.grey[600]),
+                          ),
+                        ],
                       ),
-                      Text(
-                        'Left: $left',
-                        style: Theme.of(context).textTheme.bodyLarge,
-                      ),
-                      Text(
-                        'Total Time: ${Duration(seconds: totalTime).inMinutes} min',
-                        style: Theme.of(context).textTheme.bodyLarge,
-                      ),
-                      // Add more stats as needed
                     ],
                   ),
                 ),
               );
             },
           ),
+          // Removed duplicate ExerciseProvider Consumer and dead code
 
           // Water compact progress
           Consumer<WaterProvider>(
