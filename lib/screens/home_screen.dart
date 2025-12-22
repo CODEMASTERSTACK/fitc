@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import '../providers/food_provider.dart';
 import '../providers/water_provider.dart';
 import '../providers/exercise_provider.dart';
-import '../widgets/food_entry_card.dart';
 import '../widgets/add_exercise_dialog.dart';
 import 'food_screen.dart';
 import 'water_screen.dart';
@@ -26,202 +25,162 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildDashboard(BuildContext context) {
+    final dateStr = DateTime.now();
     return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Daily Summary Card
-          Consumer<FoodProvider>(
-            builder: (context, foodProvider, _) {
-              return Container(
-                margin: const EdgeInsets.all(16),
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Colors.blue.shade50,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.blue.shade200),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Today\'s Summary',
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        _SummaryItem(
-                          label: 'Calories',
-                          value: foodProvider.totalCalories.toStringAsFixed(0),
-                          unit: 'kcal',
+          // Greeting
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Good morning',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          color: Colors.grey[700],
+                          fontWeight: FontWeight.w500,
                         ),
-                        _SummaryItem(
-                          label: 'Protein',
-                          value: foodProvider.totalProtein.toStringAsFixed(1),
-                          unit: 'g',
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    '${dateStr.day}/${dateStr.month}/${dateStr.year}',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.w700,
                         ),
-                        _SummaryItem(
-                          label: 'Carbs',
-                          value: foodProvider.totalCarbs.toStringAsFixed(1),
-                          unit: 'g',
-                        ),
-                        _SummaryItem(
-                          label: 'Fats',
-                          value: foodProvider.totalFats.toStringAsFixed(1),
-                          unit: 'g',
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              );
-            },
+                  ),
+                ],
+              ),
+              CircleAvatar(
+                radius: 22,
+                backgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.12),
+                child: Icon(Icons.person, color: Theme.of(context).colorScheme.primary),
+              )
+            ],
           ),
 
-          // Water Progress
+          const SizedBox(height: 18),
+
+          // Summary cards row
+          Row(
+            children: [
+              Expanded(
+                child: Consumer<FoodProvider>(
+                  builder: (context, foodProvider, _) => _SmallCard(
+                    title: 'Food',
+                    value: foodProvider.totalCalories.toStringAsFixed(0),
+                    subtitle: 'kcal today',
+                    icon: Icons.restaurant,
+                    color: Colors.deepPurple,
+                    onTap: () => _onItemTapped(1),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Consumer<WaterProvider>(
+                  builder: (context, waterProvider, _) => _SmallCard(
+                    title: 'Liquid',
+                    value: waterProvider.totalWaterToday.toStringAsFixed(0),
+                    subtitle: 'ml today',
+                    icon: Icons.water_drop,
+                    color: Colors.blue,
+                    onTap: () => _onItemTapped(2),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Consumer<ExerciseProvider>(
+                  builder: (context, exerciseProvider, _) => _SmallCard(
+                    title: 'Exercise',
+                    value: '${exerciseProvider.completedExercisesCount}/${exerciseProvider.totalExercisesCount}',
+                    subtitle: 'done today',
+                    icon: Icons.fitness_center,
+                    color: Colors.green,
+                    onTap: () => _onItemTapped(3),
+                  ),
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 18),
+
+          // Water compact progress
           Consumer<WaterProvider>(
             builder: (context, waterProvider, _) {
-              return Container(
-                margin: const EdgeInsets.symmetric(horizontal: 16),
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Colors.blue.shade50,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.blue.shade200),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Water Intake',
-                          style: Theme.of(context).textTheme.titleMedium,
-                        ),
-                        Text(
-                          '${waterProvider.totalWaterToday.toStringAsFixed(0)}ml / ${waterProvider.dailyGoal.toStringAsFixed(0)}ml',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(4),
-                      child: LinearProgressIndicator(
-                        value:
-                            (waterProvider.totalWaterToday /
-                                    waterProvider.dailyGoal)
-                                .clamp(0.0, 1.0),
-                        minHeight: 12,
-                        backgroundColor: Colors.blue.withOpacity(0.2),
-                        valueColor: const AlwaysStoppedAnimation<Color>(
-                          Colors.blue,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+              final progress = (waterProvider.totalWaterToday / waterProvider.dailyGoal).clamp(0.0, 1.0);
+              return _ProgressCard(
+                title: 'Water Progress',
+                value: '${waterProvider.totalWaterToday.toStringAsFixed(0)} / ${waterProvider.dailyGoal.toStringAsFixed(0)} ml',
+                progress: progress,
+                color: Colors.blue,
+                onTap: () => _onItemTapped(2),
               );
             },
           ),
 
-          const SizedBox(height: 24),
+          const SizedBox(height: 16),
 
-          // Action Buttons -> now switch tabs instead of push
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: () => _onItemTapped(1),
-                    icon: const Icon(Icons.restaurant),
-                    label: const Text('Add Food'),
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: () => _onItemTapped(2),
-                    icon: const Icon(Icons.water_drop),
-                    label: const Text('Add Water'),
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+          // Recent items header
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('Recent Today', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
+              TextButton(
+                onPressed: () => _onItemTapped(1),
+                child: const Text('View all'),
+              ),
+            ],
           ),
 
-          const SizedBox(height: 24),
+          const SizedBox(height: 8),
 
-          // Recent Food Entries
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Today\'s Food',
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                const SizedBox(height: 12),
-              ],
-            ),
-          ),
+          // Recent rows: Food (3 items), Liquid (3 items), Exercise (3 items)
+          Consumer3<FoodProvider, WaterProvider, ExerciseProvider>(
+            builder: (context, foodProv, waterProv, exProv, _) {
+              final recentFood = foodProv.todaysFoods.reversed.take(3).toList();
+              final recentWater = waterProv.todaysWater.reversed.take(3).toList();
+              final recentEx = exProv.exercisesForSelectedDay.reversed.take(3).toList();
 
-          Consumer<FoodProvider>(
-            builder: (context, foodProvider, _) {
-              if (foodProvider.todaysFoods.isEmpty) {
-                return Padding(
-                  padding: const EdgeInsets.all(32),
-                  child: Column(
-                    children: [
-                      Icon(
-                        Icons.restaurant_menu,
-                        size: 48,
-                        color: Colors.grey[300],
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        'No food entries yet',
-                        style: TextStyle(color: Colors.grey[600]),
-                      ),
-                    ],
-                  ),
-                );
-              }
+              return Column(
+                children: [
+                  // Food small list
+                  if (recentFood.isNotEmpty)
+                    ...recentFood.map((f) => ListTile(
+                          dense: true,
+                          leading: CircleAvatar(backgroundColor: Colors.deepPurple.withOpacity(0.12), child: Icon(Icons.restaurant, color: Colors.deepPurple)),
+                          title: Text(f.name, style: const TextStyle(fontWeight: FontWeight.w600)),
+                          subtitle: Text('${f.calories.toStringAsFixed(0)} kcal • ${f.formattedTime}'),
+                        )),
 
-              return ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: foodProvider.todaysFoods.length,
-                itemBuilder: (context, index) {
-                  final food = foodProvider.todaysFoods[index];
-                  return FoodEntryCard(
-                    name: food.name,
-                    calories: food.calories,
-                    mealType: food.mealType,
-                    formattedTime: food.formattedTime,
-                    onDelete: () {
-                      foodProvider.deleteFoodEntry(food.id);
-                    },
-                  );
-                },
+                  // Water small list
+                  if (recentWater.isNotEmpty)
+                    ...recentWater.map((w) => ListTile(
+                          dense: true,
+                          leading: CircleAvatar(backgroundColor: Colors.blue.withOpacity(0.12), child: Icon(Icons.water_drop, color: Colors.blue)),
+                          title: Text('${w.volume.toStringAsFixed(0)} ml', style: const TextStyle(fontWeight: FontWeight.w600)),
+                          subtitle: Text(w.formattedTime),
+                        )),
+
+                  // Exercise small list
+                  if (recentEx.isNotEmpty)
+                    ...recentEx.map((e) => ListTile(
+                          dense: true,
+                          leading: CircleAvatar(backgroundColor: Colors.green.withOpacity(0.12), child: Icon(Icons.fitness_center, color: Colors.green)),
+                          title: Text(e.name, style: const TextStyle(fontWeight: FontWeight.w600)),
+                          subtitle: Text(e.description),
+                        )),
+                ],
               );
             },
           ),
 
-          const SizedBox(height: 24),
+          const SizedBox(height: 40),
         ],
       ),
     );
@@ -351,33 +310,116 @@ class _NavItem extends StatelessWidget {
   }
 }
 
-class _SummaryItem extends StatelessWidget {
-  final String label;
-  final String value;
-  final String unit;
 
-  const _SummaryItem({
-    required this.label,
+
+class _SmallCard extends StatelessWidget {
+  final String title;
+  final String value;
+  final String subtitle;
+  final IconData icon;
+  final Color color;
+  final VoidCallback onTap;
+
+  const _SmallCard({
+    Key? key,
+    required this.title,
     required this.value,
-    required this.unit,
-  });
+    required this.subtitle,
+    required this.icon,
+    required this.color,
+    required this.onTap,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Text(
-          value,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 10, offset: const Offset(0, 4)),
+          ],
         ),
-        const SizedBox(height: 4),
-        Text(unit, style: TextStyle(fontSize: 10, color: Colors.grey[600])),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w500),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.12),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(icon, color: color),
+            ),
+            const SizedBox(width: 12),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(value, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+                const SizedBox(height: 2),
+                Text(subtitle, style: TextStyle(color: Colors.grey[600], fontSize: 12)),
+              ],
+            )
+          ],
         ),
-      ],
+      ),
+    );
+  }
+}
+
+class _ProgressCard extends StatelessWidget {
+  final String title;
+  final String value;
+  final double progress;
+  final Color color;
+  final VoidCallback onTap;
+
+  const _ProgressCard({
+    Key? key,
+    required this.title,
+    required this.value,
+    required this.progress,
+    required this.color,
+    required this.onTap,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 10, offset: const Offset(0, 4))],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(title, style: const TextStyle(fontWeight: FontWeight.w700)),
+                Text(value, style: TextStyle(color: Colors.grey[600], fontSize: 12)),
+              ],
+            ),
+            const SizedBox(height: 8),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(6),
+              child: LinearProgressIndicator(
+                value: progress,
+                minHeight: 10,
+                backgroundColor: color.withOpacity(0.12),
+                valueColor: AlwaysStoppedAnimation<Color>(color),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
