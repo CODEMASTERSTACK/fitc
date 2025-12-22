@@ -95,9 +95,9 @@ class _HomeScreenState extends State<HomeScreen> {
           Consumer<WaterProvider>(
             builder: (context, waterProvider, _) {
               final drinks = waterProvider.todaysWater;
-              final totalWater = drinks.where((w) => w.type == 'water').fold<double>(0, (sum, w) => sum + w.volume);
-              final coffeeCups = drinks.where((w) => w.type == 'coffee').length;
-              final teaCups = drinks.where((w) => w.type == 'tea').length;
+              final totalWater = drinks.where((w) => w.drinkType == 'water').fold<double>(0, (sum, w) => sum + w.volume);
+              final coffeeCups = drinks.where((w) => w.drinkType == 'coffee').length;
+              final teaCups = drinks.where((w) => w.drinkType == 'tea').length;
               return Card(
                 margin: const EdgeInsets.only(bottom: 16),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
