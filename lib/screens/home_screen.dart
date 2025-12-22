@@ -654,9 +654,10 @@ class _HomeScreenState extends State<HomeScreen> {
       const FoodTabContent(),
       const LiquidTabContent(),
       const ExerciseTabContent(),
+      const SettingsScreen(),
     ];
 
-    final titles = ['Dashboard', 'Add Food', 'Liquid', 'Exercise'];
+    final titles = ['Dashboard', 'Add Food', 'Liquid', 'Exercise', 'Settings'];
 
     return Scaffold(
       appBar: AppBar(
@@ -722,6 +723,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 label: 'Exercise',
                 selected: _selectedIndex == 3,
                 onTap: () => _onItemTapped(3),
+              ),
+              _NavItem(
+                icon: Icons.settings,
+                label: 'Settings',
+                selected: _selectedIndex == 4,
+                onTap: () => _onItemTapped(4),
               ),
             ],
           ),
