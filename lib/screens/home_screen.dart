@@ -578,7 +578,7 @@ class _SmallCard extends StatefulWidget {
   final Color color;
   final VoidCallback onTap;
 
-  const _SmallCard({
+  _SmallCard({
     Key? key,
     required this.title,
     required this.value,
