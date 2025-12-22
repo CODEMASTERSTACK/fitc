@@ -1,3 +1,4 @@
+import '../models/steps_cardio_entry.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/food_entry.dart';
@@ -6,6 +7,42 @@ import '../models/daily_summary.dart';
 import '../models/exercise.dart';
 
 class StorageService {
+  static const String stepsCardioKey = 'steps_cardio_entries';
+
+  // Steps & Cardio Methods
+  Future<void> saveStepsCardioEntry(StepsCardioEntry entry) async {
+    final entries = await getAllStepsCardioEntries();
+    entries.removeWhere((e) => _isSameDay(e.date, entry.date));
+    entries.add(entry);
+    await _saveStepsCardioEntries(entries);
+  }
+
+  Future<StepsCardioEntry?> getStepsCardioEntryForDate(DateTime date) async {
+    final entries = await getAllStepsCardioEntries();
+    try {
+      return entries.firstWhere((e) => _isSameDay(e.date, date));
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Future<List<StepsCardioEntry>> getAllStepsCardioEntries() async {
+    final jsonString = _prefs.getString(stepsCardioKey) ?? '[]';
+    final jsonList = jsonDecode(jsonString) as List;
+    return jsonList.map((item) => StepsCardioEntry.fromJson(item)).toList();
+  }
+
+  Future<void> _saveStepsCardioEntries(List<StepsCardioEntry> entries) async {
+    final jsonList = entries.map((e) => e.toJson()).toList();
+    await _prefs.setString(stepsCardioKey, jsonEncode(jsonList));
+  }
+
+  bool _isSameDay(DateTime date1, DateTime date2) {
+    return date1.year == date2.year &&
+        date1.month == date2.month &&
+        date1.day == date2.day;
+  }
+
   static const String foodEntriesKey = 'food_entries';
   static const String waterEntriesKey = 'water_entries';
   static const String dailySummaryKey = 'daily_summary';

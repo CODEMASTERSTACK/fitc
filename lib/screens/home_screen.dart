@@ -1,3 +1,5 @@
+import '../models/steps_cardio_entry.dart';
+import '../services/storage_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/food_provider.dart';
@@ -19,6 +21,16 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+    final _stepsController = TextEditingController();
+    final _cardioController = TextEditingController();
+    bool _stepsCardioSaved = false;
+
+    @override
+    void dispose() {
+      _stepsController.dispose();
+      _cardioController.dispose();
+      super.dispose();
+    }
   bool _selfCheckShown = false;
 
   @override
@@ -39,6 +51,23 @@ class _HomeScreenState extends State<HomeScreen> {
         ).setSelectedDate(today);
       } catch (_) {}
       await _maybeShowSelfCheckDialog();
+
+      // Load steps & cardio for today
+      final storage = Provider.of<StorageService>(context, listen: false);
+      final entry = await storage.getStepsCardioEntryForDate(today);
+      if (entry != null) {
+        setState(() {
+          _stepsController.text = entry.steps.toString();
+          _cardioController.text = entry.cardioMinutes.toString();
+          _stepsCardioSaved = true;
+        });
+      } else {
+        setState(() {
+          _stepsController.text = '';
+          _cardioController.text = '';
+          _stepsCardioSaved = false;
+        });
+      }
     });
   }
 
@@ -93,40 +122,6 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Align(
-            alignment: Alignment.topRight,
-            child: IconButton(
-              icon: const Icon(Icons.settings, size: 28),
-              tooltip: 'Settings',
-              onPressed: _openSettings,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(top: 8, bottom: 18),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  getGreeting(),
-                  style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.primary,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 34,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  '${now.day}/${now.month}/${now.year}',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.onSurface.withOpacity(0.7),
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
-            ),
-          ),
           // Steps & Cardio Section
           Container(
             margin: const EdgeInsets.only(bottom: 18),
@@ -156,11 +151,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(
-                        Icons.directions_walk,
-                        color: Colors.white,
-                        size: 32,
-                      ),
+                      Icon(Icons.directions_walk, color: Colors.white, size: 32),
                       const SizedBox(width: 12),
                       Text(
                         'Steps & Cardio',
@@ -177,6 +168,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       Expanded(
                         child: TextFormField(
+                          controller: _stepsController,
+                          enabled: !_stepsCardioSaved,
                           decoration: InputDecoration(
                             filled: true,
                             fillColor: Colors.white,
@@ -191,6 +184,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
+                            floatingLabelBehavior: FloatingLabelBehavior.always,
                           ),
                           keyboardType: TextInputType.number,
                           style: TextStyle(fontWeight: FontWeight.bold),
@@ -199,6 +193,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       const SizedBox(width: 16),
                       Expanded(
                         child: TextFormField(
+                          controller: _cardioController,
+                          enabled: !_stepsCardioSaved,
                           decoration: InputDecoration(
                             filled: true,
                             fillColor: Colors.white,
@@ -213,6 +209,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
+                            floatingLabelBehavior: FloatingLabelBehavior.always,
                           ),
                           keyboardType: TextInputType.number,
                           style: TextStyle(fontWeight: FontWeight.bold),
@@ -221,12 +218,42 @@ class _HomeScreenState extends State<HomeScreen> {
                     ],
                   ),
                   const SizedBox(height: 10),
+                  if (!_stepsCardioSaved)
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        icon: const Icon(Icons.save),
+                        label: const Text('Save'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          foregroundColor: Theme.of(context).colorScheme.primary,
+                          textStyle: const TextStyle(fontWeight: FontWeight.bold),
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        ),
+                        onPressed: () async {
+                          final steps = int.tryParse(_stepsController.text) ?? 0;
+                          final cardio = int.tryParse(_cardioController.text) ?? 0;
+                          final entry = StepsCardioEntry(
+                            date: DateTime.now(),
+                            steps: steps,
+                            cardioMinutes: cardio,
+                          );
+                          final storage = Provider.of<StorageService>(context, listen: false);
+                          await storage.saveStepsCardioEntry(entry);
+                          setState(() {
+                            _stepsCardioSaved = true;
+                          });
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Steps & Cardio saved for today!')),
+                          );
+                        },
+                      ),
+                    ),
+                  const SizedBox(height: 10),
                   Text(
                     'Track your daily steps and cardio time for a healthier you!',
-                    style: TextStyle(
-                      color: Colors.white.withOpacity(0.85),
-                      fontSize: 14,
-                    ),
+                    style: TextStyle(color: Colors.white.withOpacity(0.85), fontSize: 14),
                     textAlign: TextAlign.center,
                   ),
                 ],

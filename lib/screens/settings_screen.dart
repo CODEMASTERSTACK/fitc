@@ -19,6 +19,9 @@ class SettingsScreen extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.download),
             title: const Text('Export data'),
+            subtitle: const Text(
+              'Download your food, water, exercise, and self-check data as PDF.',
+            ),
             onTap: () async {
               final period = await showModalBottomSheet<String>(
                 context: context,
@@ -27,6 +30,34 @@ class SettingsScreen extends StatelessWidget {
               if (period != null) {
                 await _exportData(context, period);
               }
+            },
+          ),
+          const Divider(),
+          ListTile(
+            leading: Icon(Icons.info_outline, color: Colors.blue[700]),
+            title: const Text('App Info'),
+            subtitle: const Text('Fitc v0.1.0'),
+          ),
+          ListTile(
+            leading: Icon(Icons.feedback_outlined, color: Colors.green[700]),
+            title: const Text('Send Feedback'),
+            subtitle: const Text('Let us know your thoughts!'),
+            onTap: () {
+              // TODO: Implement feedback feature
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Feedback feature coming soon!')),
+              );
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.color_lens_outlined, color: Colors.purple[700]),
+            title: const Text('Theme'),
+            subtitle: const Text('Light / Dark (coming soon)'),
+            onTap: () {
+              // TODO: Implement theme toggle
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Theme toggle coming soon!')),
+              );
             },
           ),
         ],
