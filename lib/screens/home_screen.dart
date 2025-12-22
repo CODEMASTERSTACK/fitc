@@ -5,6 +5,7 @@ import '../providers/water_provider.dart';
 import '../providers/exercise_provider.dart';
 import '../widgets/add_exercise_dialog.dart';
 import '../widgets/self_check_dialog.dart';
+import 'settings_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'food_screen.dart';
 import 'water_screen.dart';
@@ -65,6 +66,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   int _selectedIndex = 0;
 
+  void _openSettings() {
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (ctx) => const SettingsScreen()));
+  }
+
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -86,6 +93,14 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Align(
+            alignment: Alignment.topRight,
+            child: IconButton(
+              icon: const Icon(Icons.settings, size: 28),
+              tooltip: 'Settings',
+              onPressed: _openSettings,
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.only(top: 8, bottom: 18),
             child: Column(

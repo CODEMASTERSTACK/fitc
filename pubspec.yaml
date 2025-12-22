@@ -16,6 +16,8 @@ dependencies:
   url_launcher: ^6.1.8
   video_player: ^2.5.1
   chewie: ^1.4.0
+  pdf: ^3.10.7
+  path_provider: ^2.1.2
 
 dev_dependencies:
   flutter_test:
