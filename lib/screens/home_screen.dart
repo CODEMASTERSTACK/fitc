@@ -151,10 +151,16 @@ class _HomeScreenState extends State<HomeScreen> {
               final totalWater = drinks
                   .where((w) => w.drinkType == 'water')
                   .fold<double>(0, (sum, w) => sum + w.volume);
-              final coffeeCups = drinks
-                  .where((w) => w.drinkType == 'coffee')
-                  .length;
-              final teaCups = drinks.where((w) => w.drinkType == 'tea').length;
+
+              // Group by drinkType except water
+              final Map<String, int> drinkCounts = {};
+              for (var w in drinks) {
+                if (w.drinkType != 'water') {
+                  drinkCounts[w.drinkType] = (drinkCounts[w.drinkType] ?? 0) + 1;
+                }
+              }
+              // Only show up to 3 types
+              final drinkTypesToShow = drinkCounts.keys.take(3).toList();
               return Container(
                 margin: const EdgeInsets.only(bottom: 18),
                 decoration: BoxDecoration(
@@ -188,47 +194,40 @@ class _HomeScreenState extends State<HomeScreen> {
                         ],
                       ),
                       const SizedBox(height: 14),
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          children: [
+                      Row(
+                        children: [
+                          Text(
+                            totalWater.toStringAsFixed(0),
+                            style: Theme.of(context).textTheme.displaySmall
+                                ?.copyWith(fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'ml water',
+                            style: Theme.of(context).textTheme.bodyMedium
+                                ?.copyWith(color: Colors.grey[600]),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          for (var i = 0; i < drinkTypesToShow.length; i++) ...[
                             Text(
-                              totalWater.toStringAsFixed(0),
+                              drinkCounts[drinkTypesToShow[i]].toString(),
                               style: Theme.of(context).textTheme.displaySmall
                                   ?.copyWith(fontWeight: FontWeight.bold),
                             ),
                             const SizedBox(width: 8),
                             Text(
-                              'ml water',
+                              drinkTypesToShow[i],
                               style: Theme.of(context).textTheme.bodyMedium
                                   ?.copyWith(color: Colors.grey[600]),
                             ),
-                            const SizedBox(width: 24),
-                            Text(
-                              '$coffeeCups',
-                              style: Theme.of(context).textTheme.displaySmall
-                                  ?.copyWith(fontWeight: FontWeight.bold),
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              'coffee',
-                              style: Theme.of(context).textTheme.bodyMedium
-                                  ?.copyWith(color: Colors.grey[600]),
-                            ),
-                            const SizedBox(width: 16),
-                            Text(
-                              '$teaCups',
-                              style: Theme.of(context).textTheme.displaySmall
-                                  ?.copyWith(fontWeight: FontWeight.bold),
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              'tea',
-                              style: Theme.of(context).textTheme.bodyMedium
-                                  ?.copyWith(color: Colors.grey[600]),
-                            ),
-                          ],
-                        ),
+                            if (i != drinkTypesToShow.length - 1)
+                              const SizedBox(width: 24),
+                          ]
+                        ],
                       ),
                     ],
                   ),
