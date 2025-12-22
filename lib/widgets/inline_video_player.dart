@@ -19,17 +19,19 @@ class _InlineVideoPlayerState extends State<InlineVideoPlayer> {
   void initState() {
     super.initState();
     _videoController = VideoPlayerController.network(widget.url)
-      ..initialize().then((_) {
-        _chewieController = ChewieController(
-          videoPlayerController: _videoController,
-          autoPlay: false,
-          looping: false,
-          showControls: true,
-        );
-        setState(() => _initialized = true);
-      }).catchError((_) {
-        // initialization failed
-      });
+      ..initialize()
+          .then((_) {
+            _chewieController = ChewieController(
+              videoPlayerController: _videoController,
+              autoPlay: false,
+              looping: false,
+              showControls: true,
+            );
+            setState(() => _initialized = true);
+          })
+          .catchError((_) {
+            // initialization failed
+          });
   }
 
   @override

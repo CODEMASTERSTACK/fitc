@@ -33,10 +33,16 @@ class ExerciseProvider extends ChangeNotifier {
 
   Future<void> init() async {
     _exercises = await storageService.getExercises();
-    // Seed Monday plan if there are no Monday exercises yet
+    // Seed Monday and Tuesday plans if missing
     final hasMonday = _exercises.any((e) => e.dayOfWeek == 'Monday');
+    final hasTuesday = _exercises.any((e) => e.dayOfWeek == 'Tuesday');
     if (!hasMonday) {
       await seedMondayPlan();
+    }
+    if (!hasTuesday) {
+      await seedTuesdayPlan();
+    }
+    if (!hasMonday || !hasTuesday) {
       _exercises = await storageService.getExercises();
     }
     notifyListeners();
@@ -242,6 +248,74 @@ class ExerciseProvider extends ChangeNotifier {
           'https://res.cloudinary.com/dgztzubdh/video/upload/v1766411227/Burpees_a_powerful_exercise_for_your_homeworkout._More_in_the_link_-_Fit_Media_Channel_720p_h264_wnbrvv.mp4',
       durationSeconds: 0,
       dayOfWeek: 'Monday',
+    );
+  }
+
+  // Seed Tuesday plan (Cardio, Core, Neck & Posture)
+  Future<void> seedTuesdayPlan() async {
+    // Cardio
+    await addExercise(
+      name: 'Brisk walking / fast indoor marching',
+      description: 'Cardio — 45–60 min',
+      imageUrl: '',
+      durationSeconds: 60 * 45,
+      dayOfWeek: 'Tuesday',
+    );
+
+    // Core (rest 30–45 sec)
+    await addExercise(
+      name: 'Bicycle crunch',
+      description: 'Core — 3 × 20',
+      imageUrl:
+          'https://res.cloudinary.com/dgztzubdh/video/upload/v1766416990/How_To_Do_A_Bicycle_Crunch_shorts_-_Heather_Robertson_720p_h264_v4ww47.mp4',
+      durationSeconds: 0,
+      dayOfWeek: 'Tuesday',
+    );
+
+    await addExercise(
+      name: 'Leg raises',
+      description: 'Core — 3 × 15',
+      imageUrl:
+          'https://res.cloudinary.com/dgztzubdh/video/upload/v1766416953/Leg_Raises_Fitness_Friday_shorts_-_Duke_Health_720p_h264_ndkxse.mp4',
+      durationSeconds: 0,
+      dayOfWeek: 'Tuesday',
+    );
+
+    await addExercise(
+      name: 'Plank shoulder taps',
+      description: 'Core — 3 × 20',
+      imageUrl:
+          'https://res.cloudinary.com/dgztzubdh/video/upload/v1766417002/Shoulder_Taps_Fitness_Friday_shorts_-_Duke_Health_720p_h264_t3ohmq.mp4',
+      durationSeconds: 0,
+      dayOfWeek: 'Tuesday',
+    );
+
+    // Neck & Posture
+    await addExercise(
+      name: 'Chin tucks',
+      description: 'Neck & Posture — 3 × 20',
+      imageUrl:
+          'https://res.cloudinary.com/dgztzubdh/video/upload/v1766416953/How_to_do_the_Chin_Tuck_-_BackSpace_Chiropractic_Fitness_TV_720p_h264_hgqez4.mp4',
+      durationSeconds: 0,
+      dayOfWeek: 'Tuesday',
+    );
+
+    await addExercise(
+      name: 'Wall posture hold',
+      description: 'Neck & Posture — 2 min',
+      imageUrl:
+          'https://res.cloudinary.com/dgztzubdh/video/upload/v1766416951/Wall_Sit_-_FitnessBlender_720p_h264_1_phpv8n.mp4',
+      durationSeconds: 120,
+      dayOfWeek: 'Tuesday',
+    );
+
+    await addExercise(
+      name: 'Chin lift hold',
+      description: 'Neck & Posture — 3 × 30 sec',
+      imageUrl:
+          'https://res.cloudinary.com/dgztzubdh/video/upload/v1766416954/The_Chin_Tuck_Hold_Neck_Strength_Exercise_-_Dr._Carl_Baird_720p_h264_azu91p.mp4',
+      durationSeconds: 30,
+      dayOfWeek: 'Tuesday',
     );
   }
 }

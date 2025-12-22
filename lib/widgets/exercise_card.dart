@@ -84,14 +84,14 @@ class ExerciseCard extends StatelessWidget {
               children: [
                 Icon(Icons.timer, size: 16, color: Colors.blue),
                 const SizedBox(width: 6),
-                  Text(
-                    'Target: ${exercise.formattedDuration}',
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: Colors.grey[700],
-                      fontWeight: FontWeight.w500,
-                    ),
+                Text(
+                  'Target: ${exercise.formattedDuration}',
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: Colors.grey[700],
+                    fontWeight: FontWeight.w500,
                   ),
+                ),
               ],
             ),
 
@@ -100,11 +100,11 @@ class ExerciseCard extends StatelessWidget {
             // Timer or Reps Section
             if (!exercise.isCompleted)
               (exercise.durationSeconds > 0
-                  ? ExerciseTimerWidget(exercise: exercise, onComplete: onComplete)
-                  : _RepsTracker(
+                  ? ExerciseTimerWidget(
                       exercise: exercise,
                       onComplete: onComplete,
-                    ))
+                    )
+                  : _RepsTracker(exercise: exercise, onComplete: onComplete))
             else
               // Completed state
               Container(
@@ -167,7 +167,11 @@ class ExerciseCard extends StatelessWidget {
 // Helper to detect and render media previews (image or video placeholder)
 Widget _buildMediaPreview(String url) {
   final lower = url.toLowerCase();
-  final isVideo = lower.endsWith('.mp4') || lower.endsWith('.webm') || lower.endsWith('.mov') || lower.endsWith('.mkv');
+  final isVideo =
+      lower.endsWith('.mp4') ||
+      lower.endsWith('.webm') ||
+      lower.endsWith('.mov') ||
+      lower.endsWith('.mkv');
 
   if (isVideo) {
     return InlineVideoPlayer(url: url);
@@ -180,10 +184,7 @@ Widget _buildMediaPreview(String url) {
       fit: BoxFit.cover,
       errorBuilder: (context, error, stackTrace) {
         return Center(
-          child: Icon(
-            Icons.image_not_supported,
-            color: Colors.grey[400],
-          ),
+          child: Icon(Icons.image_not_supported, color: Colors.grey[400]),
         );
       },
     );
@@ -194,15 +195,11 @@ Widget _buildMediaPreview(String url) {
     fit: BoxFit.cover,
     errorBuilder: (context, error, stackTrace) {
       return Center(
-        child: Icon(
-          Icons.image_not_supported,
-          color: Colors.grey[400],
-        ),
+        child: Icon(Icons.image_not_supported, color: Colors.grey[400]),
       );
     },
   );
 }
-
 
 class _RepsTracker extends StatefulWidget {
   final Exercise exercise;
@@ -225,7 +222,9 @@ class _RepsTrackerState extends State<_RepsTracker> {
   }
 
   void _inc() => setState(() => _count++);
-  void _dec() => setState(() { if (_count > 0) _count--; });
+  void _dec() => setState(() {
+    if (_count > 0) _count--;
+  });
   void _reset() => setState(() => _count = 0);
 
   @override
@@ -249,7 +248,10 @@ class _RepsTrackerState extends State<_RepsTracker> {
               const SizedBox(width: 8),
               Text(
                 '$_count',
-                style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(width: 8),
               IconButton(
@@ -270,7 +272,9 @@ class _RepsTrackerState extends State<_RepsTracker> {
               const SizedBox(width: 8),
               Expanded(
                 child: FilledButton(
-                  onPressed: _count > 0 ? () => widget.onComplete(_count) : null,
+                  onPressed: _count > 0
+                      ? () => widget.onComplete(_count)
+                      : null,
                   child: const Text('Done'),
                 ),
               ),

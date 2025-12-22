@@ -140,21 +140,23 @@ class _ExerciseTabContentState extends State<ExerciseTabContent> {
                           ),
                         ),
                       ),
-                      ...list.map((exercise) => ExerciseCard(
-                            exercise: exercise,
-                            onDelete: () {
-                              exerciseProvider.deleteExercise(exercise.id);
-                            },
-                            onComplete: (actualDuration) {
-                              exerciseProvider.markExerciseComplete(
-                                exercise.id,
-                                actualDuration,
-                              );
-                            },
-                            onReset: () {
-                              exerciseProvider.resetExerciseProgress(exercise.id);
-                            },
-                          ))
+                      ...list.map(
+                        (exercise) => ExerciseCard(
+                          exercise: exercise,
+                          onDelete: () {
+                            exerciseProvider.deleteExercise(exercise.id);
+                          },
+                          onComplete: (actualDuration) {
+                            exerciseProvider.markExerciseComplete(
+                              exercise.id,
+                              actualDuration,
+                            );
+                          },
+                          onReset: () {
+                            exerciseProvider.resetExerciseProgress(exercise.id);
+                          },
+                        ),
+                      ),
                     ],
                   );
                 },
