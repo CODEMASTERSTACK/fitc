@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/inline_video_player.dart';
 import '../models/exercise.dart';
 import 'exercise_timer_widget.dart';
 
@@ -64,7 +65,7 @@ class ExerciseCard extends StatelessWidget {
             // Image/Video Preview
             if (exercise.imageUrl.isNotEmpty)
               Container(
-                height: 120,
+                height: 200,
                 width: double.infinity,
                 decoration: BoxDecoration(
                   color: Colors.grey[100],
@@ -72,31 +73,7 @@ class ExerciseCard extends StatelessWidget {
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(8),
-                  child: exercise.imageUrl.startsWith('http')
-                      ? Image.network(
-                          exercise.imageUrl,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Center(
-                              child: Icon(
-                                Icons.image_not_supported,
-                                color: Colors.grey[400],
-                              ),
-                            );
-                          },
-                        )
-                      : Image.asset(
-                          exercise.imageUrl,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Center(
-                              child: Icon(
-                                Icons.image_not_supported,
-                                color: Colors.grey[400],
-                              ),
-                            );
-                          },
-                        ),
+                  child: _buildMediaPreview(exercise.imageUrl),
                 ),
               ),
 
@@ -107,22 +84,27 @@ class ExerciseCard extends StatelessWidget {
               children: [
                 Icon(Icons.timer, size: 16, color: Colors.blue),
                 const SizedBox(width: 6),
-                Text(
-                  'Target: ${exercise.formattedDuration}',
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: Colors.grey[700],
-                    fontWeight: FontWeight.w500,
+                  Text(
+                    'Target: ${exercise.formattedDuration}',
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Colors.grey[700],
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
-                ),
               ],
             ),
 
             const SizedBox(height: 12),
 
-            // Timer Section
+            // Timer or Reps Section
             if (!exercise.isCompleted)
-              ExerciseTimerWidget(exercise: exercise, onComplete: onComplete)
+              (exercise.durationSeconds > 0
+                  ? ExerciseTimerWidget(exercise: exercise, onComplete: onComplete)
+                  : _RepsTracker(
+                      exercise: exercise,
+                      onComplete: onComplete,
+                    ))
             else
               // Completed state
               Container(
@@ -177,6 +159,124 @@ class ExerciseCard extends StatelessWidget {
               ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+// Helper to detect and render media previews (image or video placeholder)
+Widget _buildMediaPreview(String url) {
+  final lower = url.toLowerCase();
+  final isVideo = lower.endsWith('.mp4') || lower.endsWith('.webm') || lower.endsWith('.mov') || lower.endsWith('.mkv');
+
+  if (isVideo) {
+    return InlineVideoPlayer(url: url);
+  }
+
+  // Try to show as image; keep error fallback
+  if (url.startsWith('http')) {
+    return Image.network(
+      url,
+      fit: BoxFit.cover,
+      errorBuilder: (context, error, stackTrace) {
+        return Center(
+          child: Icon(
+            Icons.image_not_supported,
+            color: Colors.grey[400],
+          ),
+        );
+      },
+    );
+  }
+
+  return Image.asset(
+    url,
+    fit: BoxFit.cover,
+    errorBuilder: (context, error, stackTrace) {
+      return Center(
+        child: Icon(
+          Icons.image_not_supported,
+          color: Colors.grey[400],
+        ),
+      );
+    },
+  );
+}
+
+
+class _RepsTracker extends StatefulWidget {
+  final Exercise exercise;
+  final Function(int) onComplete;
+
+  const _RepsTracker({required this.exercise, required this.onComplete});
+
+  @override
+  State<_RepsTracker> createState() => _RepsTrackerState();
+}
+
+class _RepsTrackerState extends State<_RepsTracker> {
+  late int _count;
+
+  @override
+  void initState() {
+    super.initState();
+    // rep count stored in actualDurationSeconds for backwards compatibility
+    _count = widget.exercise.actualDurationSeconds;
+  }
+
+  void _inc() => setState(() => _count++);
+  void _dec() => setState(() { if (_count > 0) _count--; });
+  void _reset() => setState(() => _count = 0);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.orange.withOpacity(0.04),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.orange.withOpacity(0.12)),
+      ),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              IconButton(
+                onPressed: _dec,
+                icon: const Icon(Icons.remove_circle_outline),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                '$_count',
+                style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(width: 8),
+              IconButton(
+                onPressed: _inc,
+                icon: const Icon(Icons.add_circle_outline),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: _reset,
+                  child: const Text('Reset'),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: FilledButton(
+                  onPressed: _count > 0 ? () => widget.onComplete(_count) : null,
+                  child: const Text('Done'),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

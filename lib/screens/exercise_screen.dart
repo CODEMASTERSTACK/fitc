@@ -104,25 +104,58 @@ class _ExerciseTabContentState extends State<ExerciseTabContent> {
                 );
               }
 
+              // Group exercises into sections: Warm-up, Workout, Finisher, Other
+              final Map<String, List> sections = {};
+              for (var ex in exercises) {
+                final desc = ex.description.toLowerCase();
+                String section = 'Other';
+                if (desc.contains('warm')) {
+                  section = 'Warm-up';
+                } else if (desc.contains('finisher')) {
+                  section = 'Finisher';
+                } else if (desc.contains('workout') || desc.contains('rest')) {
+                  section = 'Workout';
+                }
+                sections.putIfAbsent(section, () => []).add(ex);
+              }
+
+              final sectionKeys = sections.keys.toList();
+
               return ListView.builder(
                 padding: const EdgeInsets.all(16),
-                itemCount: exercises.length,
-                itemBuilder: (context, index) {
-                  final exercise = exercises[index];
-                  return ExerciseCard(
-                    exercise: exercise,
-                    onDelete: () {
-                      exerciseProvider.deleteExercise(exercise.id);
-                    },
-                    onComplete: (actualDuration) {
-                      exerciseProvider.markExerciseComplete(
-                        exercise.id,
-                        actualDuration,
-                      );
-                    },
-                    onReset: () {
-                      exerciseProvider.resetExerciseProgress(exercise.id);
-                    },
+                itemCount: sectionKeys.length,
+                itemBuilder: (context, sIdx) {
+                  final key = sectionKeys[sIdx];
+                  final list = sections[key]!;
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        child: Text(
+                          key,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                      ...list.map((exercise) => ExerciseCard(
+                            exercise: exercise,
+                            onDelete: () {
+                              exerciseProvider.deleteExercise(exercise.id);
+                            },
+                            onComplete: (actualDuration) {
+                              exerciseProvider.markExerciseComplete(
+                                exercise.id,
+                                actualDuration,
+                              );
+                            },
+                            onReset: () {
+                              exerciseProvider.resetExerciseProgress(exercise.id);
+                            },
+                          ))
+                    ],
                   );
                 },
               );

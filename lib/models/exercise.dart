@@ -7,6 +7,7 @@ class Exercise {
   final String dayOfWeek; // 'Monday', 'Tuesday', etc.
   bool isCompleted;
   int actualDurationSeconds; // Actual time spent
+  int actualReps; // Actual reps completed (for rep-based exercises)
 
   Exercise({
     required this.id,
@@ -17,6 +18,7 @@ class Exercise {
     required this.dayOfWeek,
     this.isCompleted = false,
     this.actualDurationSeconds = 0,
+    this.actualReps = 0,
   });
 
   // Convert to JSON for storage
@@ -30,6 +32,7 @@ class Exercise {
       'dayOfWeek': dayOfWeek,
       'isCompleted': isCompleted,
       'actualDurationSeconds': actualDurationSeconds,
+      'actualReps': actualReps,
     };
   }
 
@@ -44,6 +47,7 @@ class Exercise {
       dayOfWeek: json['dayOfWeek'],
       isCompleted: json['isCompleted'] ?? false,
       actualDurationSeconds: json['actualDurationSeconds'] ?? 0,
+      actualReps: json['actualReps'] ?? 0,
     );
   }
 
@@ -57,5 +61,13 @@ class Exercise {
     final minutes = actualDurationSeconds ~/ 60;
     final seconds = actualDurationSeconds % 60;
     return '${minutes}m ${seconds}s';
+  }
+
+  String get formattedActualReps => '$actualReps reps';
+
+  String get formattedActualDisplay {
+    if (actualReps > 0) return formattedActualReps;
+    if (actualDurationSeconds > 0) return formattedActualDuration;
+    return '0';
   }
 }

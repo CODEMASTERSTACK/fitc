@@ -90,9 +90,16 @@ class ExerciseProvider extends ChangeNotifier {
   ) async {
     final index = _exercises.indexWhere((e) => e.id == id);
     if (index != -1) {
-      _exercises[index].isCompleted = true;
-      _exercises[index].actualDurationSeconds = actualDurationSeconds;
-      await updateExercise(_exercises[index]);
+      final ex = _exercises[index];
+      ex.isCompleted = true;
+      // If the exercise has a target duration (>0), treat the value as seconds.
+      if (ex.durationSeconds > 0) {
+        ex.actualDurationSeconds = actualDurationSeconds;
+      } else {
+        // Otherwise treat the value as reps
+        ex.actualReps = actualDurationSeconds;
+      }
+      await updateExercise(ex);
     }
   }
 
@@ -101,6 +108,7 @@ class ExerciseProvider extends ChangeNotifier {
     if (index != -1) {
       _exercises[index].isCompleted = false;
       _exercises[index].actualDurationSeconds = 0;
+      _exercises[index].actualReps = 0;
       await updateExercise(_exercises[index]);
     }
   }

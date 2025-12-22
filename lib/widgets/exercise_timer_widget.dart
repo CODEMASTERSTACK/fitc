@@ -139,7 +139,7 @@ class _ExerciseTimerWidgetState extends State<ExerciseTimerWidget> {
                 child: FilledButton.icon(
                   onPressed: _isRunning ? _stopTimer : _startTimer,
                   icon: Icon(_isRunning ? Icons.pause : Icons.play_arrow),
-                  label: Text(_isRunning ? 'Pause' : 'Start'),
+                  label: FittedBox(child: Text(_isRunning ? 'Pause' : 'Start')),
                   style: FilledButton.styleFrom(
                     backgroundColor: _isRunning ? Colors.orange : Colors.blue,
                   ),
@@ -153,7 +153,7 @@ class _ExerciseTimerWidgetState extends State<ExerciseTimerWidget> {
                 child: OutlinedButton.icon(
                   onPressed: _resetTimer,
                   icon: const Icon(Icons.refresh),
-                  label: const Text('Reset'),
+                  label: const FittedBox(child: Text('Reset')),
                 ),
               ),
 
@@ -165,7 +165,7 @@ class _ExerciseTimerWidgetState extends State<ExerciseTimerWidget> {
                   child: FilledButton.icon(
                     onPressed: _completeExercise,
                     icon: const Icon(Icons.check),
-                    label: const Text('Done'),
+                    label: const FittedBox(child: Text('Done')),
                     style: FilledButton.styleFrom(
                       backgroundColor: Colors.green,
                     ),
