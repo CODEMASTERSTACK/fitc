@@ -33,6 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
       if (hour >= 17 && hour < 21) return 'Good evening';
       return 'Good night';
     }
+
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
       child: Column(
@@ -42,98 +43,183 @@ class _HomeScreenState extends State<HomeScreen> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                getGreeting(),
-                style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                      color: Colors.grey[900],
-                      fontWeight: FontWeight.bold,
-                      fontSize: 32,
+              Padding(
+                padding: const EdgeInsets.only(top: 8, bottom: 18),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      getGreeting(),
+                      style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                            color: Theme.of(context).colorScheme.primary,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 34,
+                          ),
                     ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                '${now.day}/${now.month}/${now.year}',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w700,
+                    const SizedBox(height: 6),
+                    Text(
+                      '${now.day}/${now.month}/${now.year}',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                            fontWeight: FontWeight.w500,
+                          ),
                     ),
+                  ],
+                ),
               ),
-            ],
-          ),
-
-          const SizedBox(height: 22),
-
           // Food Section
           Consumer<FoodProvider>(
-            builder: (context, foodProvider, _) {
-              final totalQuantity = foodProvider.todaysFoods.fold<double>(0, (sum, f) => sum + (f.quantity ?? 0));
-              return Card(
-                margin: const EdgeInsets.only(bottom: 16),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Icon(Icons.restaurant, color: Colors.deepPurple),
-                          const SizedBox(width: 8),
-                          Text('Food', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      Text('Calories: ${foodProvider.totalCalories.toStringAsFixed(0)} kcal', style: Theme.of(context).textTheme.bodyLarge),
-                      Text('Total Quantity: ${totalQuantity.toStringAsFixed(0)} g/ml', style: Theme.of(context).textTheme.bodyLarge),
-                    ],
+            // Food Section
+            Consumer<FoodProvider>(
+              builder: (context, foodProvider, _) {
+                final totalQuantity = foodProvider.todaysFoods.fold<double>(0, (sum, f) => sum + (f.quantity ?? 0));
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 18),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surface,
+                    borderRadius: BorderRadius.circular(18),
+                    boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 12, offset: const Offset(0, 4))],
                   ),
-                ),
-              );
-            },
-          ),
-
-          // Liquid Section
-          Consumer<WaterProvider>(
-            builder: (context, waterProvider, _) {
-              final drinks = waterProvider.todaysWater;
-              final totalWater = drinks.where((w) => w.drinkType == 'water').fold<double>(0, (sum, w) => sum + w.volume);
-              final coffeeCups = drinks.where((w) => w.drinkType == 'coffee').length;
-              final teaCups = drinks.where((w) => w.drinkType == 'tea').length;
-              return Card(
-                margin: const EdgeInsets.only(bottom: 16),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Icon(Icons.water_drop, color: Colors.blue),
-                          const SizedBox(width: 8),
-                          Text('Liquid', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      Text('Total Water Intake: ${totalWater.toStringAsFixed(0)} ml', style: Theme.of(context).textTheme.bodyLarge),
-                      Text('Coffee: $coffeeCups cup(s)', style: Theme.of(context).textTheme.bodyLarge),
-                      Text('Tea: $teaCups cup(s)', style: Theme.of(context).textTheme.bodyLarge),
-                    ],
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(Icons.restaurant, color: Colors.deepPurple, size: 28),
+                            const SizedBox(width: 10),
+                            Text('Food', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+                          ],
+                        ),
+                        const SizedBox(height: 14),
+                        Row(
+                          children: [
+                            Text(foodProvider.totalCalories.toStringAsFixed(0), style: Theme.of(context).textTheme.displaySmall?.copyWith(fontWeight: FontWeight.bold)),
+                            const SizedBox(width: 8),
+                            Text('kcal', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey[600])),
+                            const SizedBox(width: 24),
+                            Text(totalQuantity.toStringAsFixed(0), style: Theme.of(context).textTheme.displaySmall?.copyWith(fontWeight: FontWeight.bold)),
+                            const SizedBox(width: 8),
+                            Text('g/ml', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey[600])),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              );
-            },
-          ),
+                );
+              },
+            ),
 
-          // Exercise Section
+            // Liquid Section
+            Consumer<WaterProvider>(
+              builder: (context, waterProvider, _) {
+                final drinks = waterProvider.todaysWater;
+                final totalWater = drinks.where((w) => w.drinkType == 'water').fold<double>(0, (sum, w) => sum + w.volume);
+                final coffeeCups = drinks.where((w) => w.drinkType == 'coffee').length;
+                final teaCups = drinks.where((w) => w.drinkType == 'tea').length;
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 18),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surface,
+                    borderRadius: BorderRadius.circular(18),
+                    boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 12, offset: const Offset(0, 4))],
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(Icons.water_drop, color: Colors.blue, size: 28),
+                            const SizedBox(width: 10),
+                            Text('Liquid', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+                          ],
+                        ),
+                        const SizedBox(height: 14),
+                        Row(
+                          children: [
+                            Text(totalWater.toStringAsFixed(0), style: Theme.of(context).textTheme.displaySmall?.copyWith(fontWeight: FontWeight.bold)),
+                            const SizedBox(width: 8),
+                            Text('ml water', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey[600])),
+                            const SizedBox(width: 24),
+                            Text('$coffeeCups', style: Theme.of(context).textTheme.displaySmall?.copyWith(fontWeight: FontWeight.bold)),
+                            const SizedBox(width: 8),
+                            Text('coffee', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey[600])),
+                            const SizedBox(width: 16),
+                            Text('$teaCups', style: Theme.of(context).textTheme.displaySmall?.copyWith(fontWeight: FontWeight.bold)),
+                            const SizedBox(width: 8),
+                            Text('tea', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey[600])),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+
+            // Exercise Section
+            Consumer<ExerciseProvider>(
+              builder: (context, exerciseProvider, _) {
+                final done = exerciseProvider.completedExercisesCount;
+                final total = exerciseProvider.totalExercisesCount;
+                final left = (total - done).clamp(0, total);
+                final totalTime = exerciseProvider.exercisesForSelectedDay.fold<int>(0, (sum, e) => sum + (e.durationSeconds ?? 0));
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 18),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surface,
+                    borderRadius: BorderRadius.circular(18),
+                    boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 12, offset: const Offset(0, 4))],
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(Icons.fitness_center, color: Colors.green, size: 28),
+                            const SizedBox(width: 10),
+                            Text('Exercise', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+                          ],
+                        ),
+                        const SizedBox(height: 14),
+                        Row(
+                          children: [
+                            Text('$done', style: Theme.of(context).textTheme.displaySmall?.copyWith(fontWeight: FontWeight.bold)),
+                            const SizedBox(width: 8),
+                            Text('done', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey[600])),
+                            const SizedBox(width: 24),
+                            Text('$left', style: Theme.of(context).textTheme.displaySmall?.copyWith(fontWeight: FontWeight.bold)),
+                            const SizedBox(width: 8),
+                            Text('left', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey[600])),
+                            const SizedBox(width: 24),
+                            Text('${Duration(seconds: totalTime).inMinutes}', style: Theme.of(context).textTheme.displaySmall?.copyWith(fontWeight: FontWeight.bold)),
+                            const SizedBox(width: 8),
+                            Text('min', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey[600])),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
           Consumer<ExerciseProvider>(
             builder: (context, exerciseProvider, _) {
               final done = exerciseProvider.completedExercisesCount;
               final total = exerciseProvider.totalExercisesCount;
               final left = (total - done).clamp(0, total);
-              final totalTime = exerciseProvider.exercisesForSelectedDay.fold<int>(0, (sum, e) => sum + (e.durationSeconds ?? 0));
+              final totalTime = exerciseProvider.exercisesForSelectedDay
+                  .fold<int>(0, (sum, e) => sum + (e.durationSeconds ?? 0));
               return Card(
                 margin: const EdgeInsets.only(bottom: 16),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: Column(
@@ -143,13 +229,26 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: [
                           Icon(Icons.fitness_center, color: Colors.green),
                           const SizedBox(width: 8),
-                          Text('Exercise', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+                          Text(
+                            'Exercise',
+                            style: Theme.of(context).textTheme.titleLarge
+                                ?.copyWith(fontWeight: FontWeight.bold),
+                          ),
                         ],
                       ),
                       const SizedBox(height: 10),
-                      Text('Done: $done', style: Theme.of(context).textTheme.bodyLarge),
-                      Text('Left: $left', style: Theme.of(context).textTheme.bodyLarge),
-                      Text('Total Time: ${Duration(seconds: totalTime).inMinutes} min', style: Theme.of(context).textTheme.bodyLarge),
+                      Text(
+                        'Done: $done',
+                        style: Theme.of(context).textTheme.bodyLarge,
+                      ),
+                      Text(
+                        'Left: $left',
+                        style: Theme.of(context).textTheme.bodyLarge,
+                      ),
+                      Text(
+                        'Total Time: ${Duration(seconds: totalTime).inMinutes} min',
+                        style: Theme.of(context).textTheme.bodyLarge,
+                      ),
                       // Add more stats as needed
                     ],
                   ),
@@ -161,10 +260,13 @@ class _HomeScreenState extends State<HomeScreen> {
           // Water compact progress
           Consumer<WaterProvider>(
             builder: (context, waterProvider, _) {
-              final progress = (waterProvider.totalWaterToday / waterProvider.dailyGoal).clamp(0.0, 1.0);
+              final progress =
+                  (waterProvider.totalWaterToday / waterProvider.dailyGoal)
+                      .clamp(0.0, 1.0);
               return _ProgressCard(
                 title: 'Water Progress',
-                value: '${waterProvider.totalWaterToday.toStringAsFixed(0)} / ${waterProvider.dailyGoal.toStringAsFixed(0)} ml',
+                value:
+                    '${waterProvider.totalWaterToday.toStringAsFixed(0)} / ${waterProvider.dailyGoal.toStringAsFixed(0)} ml',
                 progress: progress,
                 color: Colors.blue,
                 onTap: () => _onItemTapped(2),
@@ -178,7 +280,12 @@ class _HomeScreenState extends State<HomeScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Recent Today', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
+              Text(
+                'Recent Today',
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+              ),
               TextButton(
                 onPressed: () => _onItemTapped(1),
                 child: const Text('View all'),
@@ -192,37 +299,73 @@ class _HomeScreenState extends State<HomeScreen> {
           Consumer3<FoodProvider, WaterProvider, ExerciseProvider>(
             builder: (context, foodProv, waterProv, exProv, _) {
               final recentFood = foodProv.todaysFoods.reversed.take(3).toList();
-              final recentWater = waterProv.todaysWater.reversed.take(3).toList();
-              final recentEx = exProv.exercisesForSelectedDay.reversed.take(3).toList();
+              final recentWater = waterProv.todaysWater.reversed
+                  .take(3)
+                  .toList();
+              final recentEx = exProv.exercisesForSelectedDay.reversed
+                  .take(3)
+                  .toList();
 
               return Column(
                 children: [
                   // Food small list
                   if (recentFood.isNotEmpty)
-                    ...recentFood.map((f) => ListTile(
-                          dense: true,
-                          leading: CircleAvatar(backgroundColor: Colors.deepPurple.withOpacity(0.12), child: Icon(Icons.restaurant, color: Colors.deepPurple)),
-                          title: Text(f.name, style: const TextStyle(fontWeight: FontWeight.w600)),
-                          subtitle: Text('${f.calories.toStringAsFixed(0)} kcal • ${f.formattedTime}'),
-                        )),
+                    ...recentFood.map(
+                      (f) => ListTile(
+                        dense: true,
+                        leading: CircleAvatar(
+                          backgroundColor: Colors.deepPurple.withOpacity(0.12),
+                          child: Icon(
+                            Icons.restaurant,
+                            color: Colors.deepPurple,
+                          ),
+                        ),
+                        title: Text(
+                          f.name,
+                          style: const TextStyle(fontWeight: FontWeight.w600),
+                        ),
+                        subtitle: Text(
+                          '${f.calories.toStringAsFixed(0)} kcal • ${f.formattedTime}',
+                        ),
+                      ),
+                    ),
 
                   // Water small list
                   if (recentWater.isNotEmpty)
-                    ...recentWater.map((w) => ListTile(
-                          dense: true,
-                          leading: CircleAvatar(backgroundColor: Colors.blue.withOpacity(0.12), child: Icon(Icons.water_drop, color: Colors.blue)),
-                          title: Text('${w.volume.toStringAsFixed(0)} ml', style: const TextStyle(fontWeight: FontWeight.w600)),
-                          subtitle: Text(w.formattedTime),
-                        )),
+                    ...recentWater.map(
+                      (w) => ListTile(
+                        dense: true,
+                        leading: CircleAvatar(
+                          backgroundColor: Colors.blue.withOpacity(0.12),
+                          child: Icon(Icons.water_drop, color: Colors.blue),
+                        ),
+                        title: Text(
+                          '${w.volume.toStringAsFixed(0)} ml',
+                          style: const TextStyle(fontWeight: FontWeight.w600),
+                        ),
+                        subtitle: Text(w.formattedTime),
+                      ),
+                    ),
 
                   // Exercise small list
                   if (recentEx.isNotEmpty)
-                    ...recentEx.map((e) => ListTile(
-                          dense: true,
-                          leading: CircleAvatar(backgroundColor: Colors.green.withOpacity(0.12), child: Icon(Icons.fitness_center, color: Colors.green)),
-                          title: Text(e.name, style: const TextStyle(fontWeight: FontWeight.w600)),
-                          subtitle: Text(e.description),
-                        )),
+                    ...recentEx.map(
+                      (e) => ListTile(
+                        dense: true,
+                        leading: CircleAvatar(
+                          backgroundColor: Colors.green.withOpacity(0.12),
+                          child: Icon(
+                            Icons.fitness_center,
+                            color: Colors.green,
+                          ),
+                        ),
+                        title: Text(
+                          e.name,
+                          style: const TextStyle(fontWeight: FontWeight.w600),
+                        ),
+                        subtitle: Text(e.description),
+                      ),
+                    ),
                 ],
               );
             },
@@ -358,8 +501,6 @@ class _NavItem extends StatelessWidget {
   }
 }
 
-
-
 class _SmallCard extends StatefulWidget {
   final String title;
   final String value;
@@ -399,8 +540,14 @@ class _SmallCardState extends State<_SmallCard> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final valueStyle = theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700, fontSize: 16);
-    final subtitleStyle = theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurface.withOpacity(0.7), fontSize: 12);
+    final valueStyle = theme.textTheme.titleMedium?.copyWith(
+      fontWeight: FontWeight.w700,
+      fontSize: 16,
+    );
+    final subtitleStyle = theme.textTheme.bodySmall?.copyWith(
+      color: theme.colorScheme.onSurface.withOpacity(0.7),
+      fontSize: 12,
+    );
 
     return AnimatedOpacity(
       duration: const Duration(milliseconds: 360),
@@ -421,7 +568,11 @@ class _SmallCardState extends State<_SmallCard> {
                 color: theme.colorScheme.surface,
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
-                  BoxShadow(color: theme.colorScheme.shadow.withOpacity(0.04), blurRadius: 10, offset: const Offset(0, 4)),
+                  BoxShadow(
+                    color: theme.colorScheme.shadow.withOpacity(0.04),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
                 ],
               ),
               child: Row(
@@ -442,7 +593,7 @@ class _SmallCardState extends State<_SmallCard> {
                       const SizedBox(height: 4),
                       Text(widget.subtitle, style: subtitleStyle),
                     ],
-                  )
+                  ),
                 ],
               ),
             ),
@@ -489,8 +640,12 @@ class _ProgressCardState extends State<_ProgressCard> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final titleStyle = theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700);
-    final valueStyle = theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurface.withOpacity(0.7));
+    final titleStyle = theme.textTheme.titleMedium?.copyWith(
+      fontWeight: FontWeight.w700,
+    );
+    final valueStyle = theme.textTheme.bodySmall?.copyWith(
+      color: theme.colorScheme.onSurface.withOpacity(0.7),
+    );
 
     return AnimatedOpacity(
       duration: const Duration(milliseconds: 380),
@@ -511,7 +666,13 @@ class _ProgressCardState extends State<_ProgressCard> {
               decoration: BoxDecoration(
                 color: theme.colorScheme.surface,
                 borderRadius: BorderRadius.circular(12),
-                boxShadow: [BoxShadow(color: theme.colorScheme.shadow.withOpacity(0.04), blurRadius: 10, offset: const Offset(0, 4))],
+                boxShadow: [
+                  BoxShadow(
+                    color: theme.colorScheme.shadow.withOpacity(0.04),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
