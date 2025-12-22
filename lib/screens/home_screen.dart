@@ -312,7 +312,7 @@ class _NavItem extends StatelessWidget {
 
 
 
-class _SmallCard extends StatelessWidget {
+class _SmallCard extends StatefulWidget {
   final String title;
   final String value;
   final String subtitle;
@@ -331,45 +331,81 @@ class _SmallCard extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<_SmallCard> createState() => _SmallCardState();
+}
+
+class _SmallCardState extends State<_SmallCard> {
+  bool _visible = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Kick off a small entrance animation
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Future.delayed(const Duration(milliseconds: 60), () {
+        if (mounted) setState(() => _visible = true);
+      });
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 10, offset: const Offset(0, 4)),
-          ],
-        ),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(10),
+    final theme = Theme.of(context);
+    final valueStyle = theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700, fontSize: 16);
+    final subtitleStyle = theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurface.withOpacity(0.7), fontSize: 12);
+
+    return AnimatedOpacity(
+      duration: const Duration(milliseconds: 360),
+      opacity: _visible ? 1 : 0,
+      curve: Curves.easeOutCubic,
+      child: AnimatedScale(
+        duration: const Duration(milliseconds: 360),
+        scale: _visible ? 1 : 0.985,
+        curve: Curves.easeOutCubic,
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(12),
+            onTap: widget.onTap,
+            child: Container(
+              padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color: color.withOpacity(0.12),
-                borderRadius: BorderRadius.circular(10),
+                color: theme.colorScheme.surface,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(color: theme.colorScheme.shadow.withOpacity(0.04), blurRadius: 10, offset: const Offset(0, 4)),
+                ],
               ),
-              child: Icon(icon, color: color),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: widget.color.withOpacity(0.12),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Icon(widget.icon, color: widget.color),
+                  ),
+                  const SizedBox(width: 12),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(widget.value, style: valueStyle),
+                      const SizedBox(height: 4),
+                      Text(widget.subtitle, style: subtitleStyle),
+                    ],
+                  )
+                ],
+              ),
             ),
-            const SizedBox(width: 12),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(value, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
-                const SizedBox(height: 2),
-                Text(subtitle, style: TextStyle(color: Colors.grey[600], fontSize: 12)),
-              ],
-            )
-          ],
+          ),
         ),
       ),
     );
   }
 }
 
-class _ProgressCard extends StatelessWidget {
+class _ProgressCard extends StatefulWidget {
   final String title;
   final String value;
   final double progress;
@@ -386,38 +422,73 @@ class _ProgressCard extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<_ProgressCard> createState() => _ProgressCardState();
+}
+
+class _ProgressCardState extends State<_ProgressCard> {
+  bool _visible = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Future.delayed(const Duration(milliseconds: 70), () {
+        if (mounted) setState(() => _visible = true);
+      });
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 10, offset: const Offset(0, 4))],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(title, style: const TextStyle(fontWeight: FontWeight.w700)),
-                Text(value, style: TextStyle(color: Colors.grey[600], fontSize: 12)),
-              ],
-            ),
-            const SizedBox(height: 8),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(6),
-              child: LinearProgressIndicator(
-                value: progress,
-                minHeight: 10,
-                backgroundColor: color.withOpacity(0.12),
-                valueColor: AlwaysStoppedAnimation<Color>(color),
+    final theme = Theme.of(context);
+    final titleStyle = theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700);
+    final valueStyle = theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurface.withOpacity(0.7));
+
+    return AnimatedOpacity(
+      duration: const Duration(milliseconds: 380),
+      opacity: _visible ? 1 : 0,
+      curve: Curves.easeOutCubic,
+      child: AnimatedScale(
+        duration: const Duration(milliseconds: 380),
+        scale: _visible ? 1 : 0.987,
+        curve: Curves.easeOutCubic,
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(12),
+            onTap: widget.onTap,
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surface,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [BoxShadow(color: theme.colorScheme.shadow.withOpacity(0.04), blurRadius: 10, offset: const Offset(0, 4))],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(widget.title, style: titleStyle),
+                      Text(widget.value, style: valueStyle),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(6),
+                    child: LinearProgressIndicator(
+                      value: widget.progress,
+                      minHeight: 10,
+                      backgroundColor: widget.color.withOpacity(0.12),
+                      valueColor: AlwaysStoppedAnimation<Color>(widget.color),
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
+          ),
         ),
       ),
     );
