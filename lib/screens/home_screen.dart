@@ -4,6 +4,8 @@ import '../providers/food_provider.dart';
 import '../providers/water_provider.dart';
 import '../providers/exercise_provider.dart';
 import '../widgets/add_exercise_dialog.dart';
+import '../widgets/self_check_dialog.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'food_screen.dart';
 import 'water_screen.dart';
 import 'exercise_screen.dart';
@@ -16,6 +18,45 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  bool _selfCheckShown = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final today = DateTime.now();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      try {
+        Provider.of<FoodProvider>(context, listen: false).setSelectedDate(today);
+      } catch (_) {}
+      try {
+        Provider.of<WaterProvider>(context, listen: false).setSelectedDate(today);
+      } catch (_) {}
+      await _maybeShowSelfCheckDialog();
+    });
+  }
+
+  Future<void> _maybeShowSelfCheckDialog() async {
+    final now = DateTime.now();
+    if (now.hour < 20 || now.hour >= 24) return; // Only after 8PM, before midnight
+    final prefs = await SharedPreferences.getInstance();
+    final todayKey = 'self_check_${now.year}_${now.month}_${now.day}';
+    final alreadyChecked = prefs.getBool(todayKey) ?? false;
+    if (!alreadyChecked && !_selfCheckShown) {
+      _selfCheckShown = true;
+      // ignore: use_build_context_synchronously
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (ctx) => SelfCheckDialog(
+          onSaved: () {
+            setState(() {});
+          },
+        ),
+      );
+    }
+  }
+  
+
   int _selectedIndex = 0;
 
   void _onItemTapped(int index) {
@@ -156,7 +197,8 @@ class _HomeScreenState extends State<HomeScreen> {
               final Map<String, int> drinkCounts = {};
               for (var w in drinks) {
                 if (w.drinkType != 'water') {
-                  drinkCounts[w.drinkType] = (drinkCounts[w.drinkType] ?? 0) + 1;
+                  drinkCounts[w.drinkType] =
+                      (drinkCounts[w.drinkType] ?? 0) + 1;
                 }
               }
               // Only show up to 3 types
@@ -228,7 +270,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                             if (i != drinkTypesToShow.length - 1)
                               const SizedBox(width: 24),
-                          ]
+                          ],
                         ],
                       ),
                     ],
