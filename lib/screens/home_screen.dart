@@ -31,84 +31,121 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Greeting
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          // Dynamic greeting and date (profile icon removed)
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Good morning',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: Colors.grey[700],
-                          fontWeight: FontWeight.w500,
-                        ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '${dateStr.day}/${dateStr.month}/${dateStr.year}',
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
-                  ),
-                ],
+              // Will update greeting logic in next step
+              Text(
+                'Good morning',
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      color: Colors.grey[800],
+                      fontWeight: FontWeight.bold,
+                      fontSize: 28,
+                    ),
               ),
-              CircleAvatar(
-                radius: 22,
-                backgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.12),
-                child: Icon(Icons.person, color: Theme.of(context).colorScheme.primary),
-              )
-            ],
-          ),
-
-          const SizedBox(height: 18),
-
-          // Summary cards row
-          Row(
-            children: [
-              Expanded(
-                child: Consumer<FoodProvider>(
-                  builder: (context, foodProvider, _) => _SmallCard(
-                    title: 'Food',
-                    value: foodProvider.totalCalories.toStringAsFixed(0),
-                    subtitle: 'kcal today',
-                    icon: Icons.restaurant,
-                    color: Colors.deepPurple,
-                    onTap: () => _onItemTapped(1),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Consumer<WaterProvider>(
-                  builder: (context, waterProvider, _) => _SmallCard(
-                    title: 'Liquid',
-                    value: waterProvider.totalWaterToday.toStringAsFixed(0),
-                    subtitle: 'ml today',
-                    icon: Icons.water_drop,
-                    color: Colors.blue,
-                    onTap: () => _onItemTapped(2),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Consumer<ExerciseProvider>(
-                  builder: (context, exerciseProvider, _) => _SmallCard(
-                    title: 'Exercise',
-                    value: '${exerciseProvider.completedExercisesCount}/${exerciseProvider.totalExercisesCount}',
-                    subtitle: 'done today',
-                    icon: Icons.fitness_center,
-                    color: Colors.green,
-                    onTap: () => _onItemTapped(3),
-                  ),
-                ),
+              const SizedBox(height: 6),
+              Text(
+                '${dateStr.day}/${dateStr.month}/${dateStr.year}',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
               ),
             ],
           ),
 
-          const SizedBox(height: 18),
+          const SizedBox(height: 22),
+
+          // Responsive summary cards
+          LayoutBuilder(
+            builder: (context, constraints) {
+              if (constraints.maxWidth < 400) {
+                // Stack vertically for small screens
+                return Column(
+                  children: [
+                    Consumer<FoodProvider>(
+                      builder: (context, foodProvider, _) => _SmallCard(
+                        title: 'Food',
+                        value: foodProvider.totalCalories.toStringAsFixed(0),
+                        subtitle: 'kcal today',
+                        icon: Icons.restaurant,
+                        color: Colors.deepPurple,
+                        onTap: () => _onItemTapped(1),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Consumer<WaterProvider>(
+                      builder: (context, waterProvider, _) => _SmallCard(
+                        title: 'Liquid',
+                        value: waterProvider.totalWaterToday.toStringAsFixed(0),
+                        subtitle: 'ml today',
+                        icon: Icons.water_drop,
+                        color: Colors.blue,
+                        onTap: () => _onItemTapped(2),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Consumer<ExerciseProvider>(
+                      builder: (context, exerciseProvider, _) => _SmallCard(
+                        title: 'Exercise',
+                        value: '${exerciseProvider.completedExercisesCount}/${exerciseProvider.totalExercisesCount}',
+                        subtitle: 'done today',
+                        icon: Icons.fitness_center,
+                        color: Colors.green,
+                        onTap: () => _onItemTapped(3),
+                      ),
+                    ),
+                  ],
+                );
+              } else {
+                // Row for larger screens
+                return Row(
+                  children: [
+                    Expanded(
+                      child: Consumer<FoodProvider>(
+                        builder: (context, foodProvider, _) => _SmallCard(
+                          title: 'Food',
+                          value: foodProvider.totalCalories.toStringAsFixed(0),
+                          subtitle: 'kcal today',
+                          icon: Icons.restaurant,
+                          color: Colors.deepPurple,
+                          onTap: () => _onItemTapped(1),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Consumer<WaterProvider>(
+                        builder: (context, waterProvider, _) => _SmallCard(
+                          title: 'Liquid',
+                          value: waterProvider.totalWaterToday.toStringAsFixed(0),
+                          subtitle: 'ml today',
+                          icon: Icons.water_drop,
+                          color: Colors.blue,
+                          onTap: () => _onItemTapped(2),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Consumer<ExerciseProvider>(
+                        builder: (context, exerciseProvider, _) => _SmallCard(
+                          title: 'Exercise',
+                          value: '${exerciseProvider.completedExercisesCount}/${exerciseProvider.totalExercisesCount}',
+                          subtitle: 'done today',
+                          icon: Icons.fitness_center,
+                          color: Colors.green,
+                          onTap: () => _onItemTapped(3),
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              }
+            },
+          ),
+
+          const SizedBox(height: 22),
 
           // Water compact progress
           Consumer<WaterProvider>(
