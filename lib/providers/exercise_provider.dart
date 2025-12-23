@@ -33,16 +33,20 @@ class ExerciseProvider extends ChangeNotifier {
 
   Future<void> init() async {
     _exercises = await storageService.getExercises();
-    // Seed Monday and Tuesday plans if missing
+    // Seed Monday, Tuesday, and Wednesday plans if missing
     final hasMonday = _exercises.any((e) => e.dayOfWeek == 'Monday');
     final hasTuesday = _exercises.any((e) => e.dayOfWeek == 'Tuesday');
+    final hasWednesday = _exercises.any((e) => e.dayOfWeek == 'Wednesday');
     if (!hasMonday) {
       await seedMondayPlan();
     }
     if (!hasTuesday) {
       await seedTuesdayPlan();
     }
-    if (!hasMonday || !hasTuesday) {
+    if (!hasWednesday) {
+      await seedWednesdayPlan();
+    }
+    if (!hasMonday || !hasTuesday || !hasWednesday) {
       _exercises = await storageService.getExercises();
     }
     notifyListeners();
