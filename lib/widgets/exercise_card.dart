@@ -212,6 +212,7 @@ class _RepsTracker extends StatefulWidget {
 }
 
 class _RepsTrackerState extends State<_RepsTracker> {
+
   late int _count;
 
   @override
@@ -221,11 +222,43 @@ class _RepsTrackerState extends State<_RepsTracker> {
     _count = widget.exercise.actualDurationSeconds;
   }
 
-  void _inc() => setState(() => _count++);
-  void _dec() => setState(() {
-    if (_count > 0) _count--;
-  });
-  void _reset() => setState(() => _count = 0);
+  void _persistCount() {
+    // Save the updated count to the provider and storage
+    final provider = context.read<ExerciseProvider>();
+    final updated = Exercise(
+      id: widget.exercise.id,
+      name: widget.exercise.name,
+      description: widget.exercise.description,
+      imageUrl: widget.exercise.imageUrl,
+      durationSeconds: widget.exercise.durationSeconds,
+      dayOfWeek: widget.exercise.dayOfWeek,
+      isCompleted: widget.exercise.isCompleted,
+      actualDurationSeconds: _count,
+      actualReps: widget.exercise.actualReps,
+    );
+    provider.updateExercise(updated);
+  }
+
+  void _inc() {
+    setState(() {
+      _count++;
+      _persistCount();
+    });
+  }
+  void _dec() {
+    setState(() {
+      if (_count > 0) {
+        _count--;
+        _persistCount();
+      }
+    });
+  }
+  void _reset() {
+    setState(() {
+      _count = 0;
+      _persistCount();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
