@@ -104,43 +104,48 @@ class _ExerciseTabContentState extends State<ExerciseTabContent> {
                 );
               }
 
-              // Group exercises into sections: Warm-up, Workout, Finisher, Other
-              final Map<String, List> sections = {};
+              // Group exercises into three fixed sections: Warm-up, Workout, Finisher
+              final List<MapEntry<String, List>> sections = [
+                MapEntry('Warm-up', <dynamic>[]),
+                MapEntry('Workout', <dynamic>[]),
+                MapEntry('Finisher', <dynamic>[]),
+              ];
               for (var ex in exercises) {
                 final desc = ex.description.toLowerCase();
-                String section = 'Other';
                 if (desc.contains('warm')) {
-                  section = 'Warm-up';
+                  sections[0].value.add(ex);
                 } else if (desc.contains('finisher')) {
-                  section = 'Finisher';
-                } else if (desc.contains('workout') || desc.contains('rest')) {
-                  section = 'Workout';
+                  sections[2].value.add(ex);
+                } else {
+                  sections[1].value.add(ex);
                 }
-                sections.putIfAbsent(section, () => []).add(ex);
               }
 
-              final sectionKeys = sections.keys.toList();
-
-              return ListView.builder(
+              return ListView(
                 padding: const EdgeInsets.all(16),
-                itemCount: sectionKeys.length,
-                itemBuilder: (context, sIdx) {
-                  final key = sectionKeys[sIdx];
-                  final list = sections[key]!;
+                children: sections.map((section) {
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8),
                         child: Text(
-                          key,
+                          section.key,
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
                       ),
-                      ...list.map(
+                      if (section.value.isEmpty)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 8, left: 8),
+                          child: Text(
+                            'No ${section.key.toLowerCase()} exercises',
+                            style: TextStyle(color: Colors.grey[500], fontSize: 13),
+                          ),
+                        ),
+                      ...section.value.map(
                         (exercise) => ExerciseCard(
                           exercise: exercise,
                           onDelete: () {
@@ -159,7 +164,7 @@ class _ExerciseTabContentState extends State<ExerciseTabContent> {
                       ),
                     ],
                   );
-                },
+                }).toList(),
               );
             },
           ),
