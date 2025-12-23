@@ -104,22 +104,20 @@ class _ExerciseTabContentState extends State<ExerciseTabContent> {
                 );
               }
 
-              // Group exercises into three fixed sections: Warm-up, Workout, Finisher
-              final List<MapEntry<String, List>> sections = [
-                MapEntry('Warm-up', <dynamic>[]),
-                MapEntry('Workout', <dynamic>[]),
-                MapEntry('Finisher', <dynamic>[]),
+              // Group exercises by the explicit 'type' field
+              final warmups = exercises.where((e) => e.type == 'warm').toList();
+              final workouts = exercises
+                  .where((e) => e.type == 'workout')
+                  .toList();
+              final finishers = exercises
+                  .where((e) => e.type == 'finish')
+                  .toList();
+
+              final sections = [
+                MapEntry('Warm-up', warmups),
+                MapEntry('Workout', workouts),
+                MapEntry('Finisher', finishers),
               ];
-              for (var ex in exercises) {
-                final desc = ex.description.toLowerCase();
-                if (desc.contains('warm')) {
-                  sections[0].value.add(ex);
-                } else if (desc.contains('finisher')) {
-                  sections[2].value.add(ex);
-                } else {
-                  sections[1].value.add(ex);
-                }
-              }
 
               return ListView(
                 padding: const EdgeInsets.all(16),
@@ -142,7 +140,10 @@ class _ExerciseTabContentState extends State<ExerciseTabContent> {
                           padding: const EdgeInsets.only(bottom: 8, left: 8),
                           child: Text(
                             'No ${section.key.toLowerCase()} exercises',
-                            style: TextStyle(color: Colors.grey[500], fontSize: 13),
+                            style: TextStyle(
+                              color: Colors.grey[500],
+                              fontSize: 13,
+                            ),
                           ),
                         ),
                       ...section.value.map(

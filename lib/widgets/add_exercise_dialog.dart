@@ -61,6 +61,7 @@ class _AddExerciseDialogState extends State<AddExerciseDialog> {
 
     context.read<ExerciseProvider>().addExercise(
       name: name,
+      type: 'default', // Replace 'default' with the appropriate type value
       description: description,
       imageUrl: imageUrl,
       durationSeconds: duration,

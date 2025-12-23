@@ -5,6 +5,7 @@ class Exercise {
   final String imageUrl; // URL or path to image/video
   final int durationSeconds; // Target duration in seconds
   final String dayOfWeek; // 'Monday', 'Tuesday', etc.
+  final String type; // 'warm', 'workout', 'finish'
   bool isCompleted;
   int actualDurationSeconds; // Actual time spent
   int actualReps; // Actual reps completed (for rep-based exercises)
@@ -16,6 +17,7 @@ class Exercise {
     required this.imageUrl,
     required this.durationSeconds,
     required this.dayOfWeek,
+    required this.type,
     this.isCompleted = false,
     this.actualDurationSeconds = 0,
     this.actualReps = 0,
@@ -30,6 +32,7 @@ class Exercise {
       'imageUrl': imageUrl,
       'durationSeconds': durationSeconds,
       'dayOfWeek': dayOfWeek,
+      'type': type,
       'isCompleted': isCompleted,
       'actualDurationSeconds': actualDurationSeconds,
       'actualReps': actualReps,
@@ -45,6 +48,7 @@ class Exercise {
       imageUrl: json['imageUrl'],
       durationSeconds: json['durationSeconds'],
       dayOfWeek: json['dayOfWeek'],
+      type: json['type'] ?? 'workout',
       isCompleted: json['isCompleted'] ?? false,
       actualDurationSeconds: json['actualDurationSeconds'] ?? 0,
       actualReps: json['actualReps'] ?? 0,

@@ -235,6 +235,7 @@ class _RepsTrackerState extends State<_RepsTracker> {
       isCompleted: widget.exercise.isCompleted,
       actualDurationSeconds: _count,
       actualReps: widget.exercise.actualReps,
+      type: widget.exercise.type, // Added required 'type' parameter
     );
     provider.updateExercise(updated);
   }
