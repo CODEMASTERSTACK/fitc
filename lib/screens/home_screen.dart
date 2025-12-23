@@ -51,6 +51,12 @@ class _HomeScreenState extends State<HomeScreen> {
           listen: false,
         ).setSelectedDate(today);
       } catch (_) {}
+      try {
+        Provider.of<ExerciseProvider>(
+          context,
+          listen: false,
+        ).setSelectedDay(_weekdayFromDateTime(today));
+      } catch (_) {}
       await _maybeShowSelfCheckDialog();
 
       // Load steps & cardio for today
@@ -70,6 +76,20 @@ class _HomeScreenState extends State<HomeScreen> {
         });
       }
     });
+  }
+
+  String _weekdayFromDateTime(DateTime date) {
+    const weekdays = [
+      'Monday',
+      'Tuesday',
+      'Wednesday',
+      'Thursday',
+      'Friday',
+      'Saturday',
+      'Sunday',
+    ];
+    // DateTime.weekday: 1=Monday, ..., 7=Sunday
+    return weekdays[date.weekday - 1];
   }
 
   Future<void> _maybeShowSelfCheckDialog() async {
