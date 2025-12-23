@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/exercise_provider.dart';
 import '../widgets/inline_video_player.dart';
 import '../models/exercise.dart';
 import 'exercise_timer_widget.dart';
@@ -212,7 +214,6 @@ class _RepsTracker extends StatefulWidget {
 }
 
 class _RepsTrackerState extends State<_RepsTracker> {
-
   late int _count;
 
   @override
@@ -223,7 +224,6 @@ class _RepsTrackerState extends State<_RepsTracker> {
   }
 
   void _persistCount() {
-    // Save the updated count to the provider and storage
     final provider = context.read<ExerciseProvider>();
     final updated = Exercise(
       id: widget.exercise.id,
@@ -245,6 +245,7 @@ class _RepsTrackerState extends State<_RepsTracker> {
       _persistCount();
     });
   }
+
   void _dec() {
     setState(() {
       if (_count > 0) {
@@ -253,6 +254,7 @@ class _RepsTrackerState extends State<_RepsTracker> {
       }
     });
   }
+
   void _reset() {
     setState(() {
       _count = 0;
